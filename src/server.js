@@ -1,24 +1,26 @@
 import express from 'express';
 import cors from 'cors';
-import pinoHttp from 'pino-http';
-import { contactsRouter } from './routes/contacts.js';
+import pino from 'pino-http';
+import  contactsRouter  from './routes/contacts.js';
 
-export const setupServer = () => {
+export function setupServer() {
   const app = express();
-
+  app.use(pino({
+    autoLogging: true,
+    transport: process.env.NODE_ENV !== 'development' ? { target: 'pino-pretty' } : undefined,
+  }),
+);
   app.use(cors());
-  app.use(pinoHttp());
   app.use(express.json());
 
   app.use('/contacts', contactsRouter);
+
   app.use((req, res) => {
     res.status(404).json({ message: 'Not found' });
   });
-
-  const PORT = process.env.PORT || 3000;
-  app.listen(PORT, () => {
-    console.log(`Server is running on port ${PORT}`);
-  });
+app.use((err, req, res, next) => {
+    res.status(500).json({ message: 'Internal Server Error'});
+});
 
   return app;
 };

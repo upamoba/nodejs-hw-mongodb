@@ -2,9 +2,9 @@ import { Schema, model } from 'mongoose';
 
 const contactSchema = new Schema(
   {
-    name: { type: String, required: true },
-    phoneNumber: { type: String, required: true },
-    email: { type: String },
+    name: { type: String, required: true, trim: true },
+    phoneNumber: { type: String, required: true, trim: true },
+    email: { type: String, trim: true, default: '' },
     isFavourite: { type: Boolean, default: false },
     contactType: {
       type: String,
