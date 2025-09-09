@@ -12,10 +12,14 @@
   "engines": {
     "node": ">=18.17"
   },
+   "keywords": [],
+  "author": "Sysoiev_hennadii <fgmapam@gmail.com>",
+  "license": "ISC",
   "dependencies": {
     "cors": "^2.8.5",
     "dotenv": "^16.6.1",
     "express": "^4.19.2",
+    "mongodb": "^6.19.0",
     "mongoose": "^8.5.2",
     "next": "^15.5.2",
     "pino-http": "^9.0.0"
