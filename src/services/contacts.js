@@ -13,7 +13,8 @@ export async function createContactService(payload)
   return doc.toObject();
 }
 export async function updateContactService(contactId, payload) {
-  return Contact.findByIdAndUpdate(contactId, payload, { new: true }).lean();
+  const updated = await Contact.findByIdAndUpdate(contactId, payload, { new: true, runValidators: true }).lean();
+  return updated;
 }
 export async function deleteContactService(contactId) {
   return Contact.findByIdAndDelete(contactId).lean();
