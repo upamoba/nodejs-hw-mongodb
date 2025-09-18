@@ -11,7 +11,7 @@ const contactsRouter = Router();
 contactsRouter.get('/', ctrlWrapper(getAllContactsController));
 contactsRouter.get('/:contactId', ctrlWrapper(getContactByIdController));
 contactsRouter.post('/', ctrlWrapper(createContactController));
-contactsRouter.put('/:contactId', ctrlWrapper(updateContactController));
+contactsRouter.patch('/:contactId', ctrlWrapper(updateContactController));
 contactsRouter.delete('/:contactId', ctrlWrapper(deleteContactController));
 
 export default contactsRouter;
