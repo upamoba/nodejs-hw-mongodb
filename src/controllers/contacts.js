@@ -4,19 +4,27 @@ updateContactService,
 deleteContactService } from '../services/contacts.js';
 import createHttpError from 'http-errors';
 
-export async function getAllContactsController(req, res, next) {
-    const data = await getAllContactsService();
+export async function getAllContactsController(req, res) {
+    const { page = 1, perPage = 10, sortBy = 'name', sortOrder = 'asc', type, isFavourite } = req.query;
+    const fav = typeof isFavourite === 'string' ? isFavourite.toLowerCase() === 'true' ? true : isFavourite.toLowerCase() === 'false' ? false : undefined : undefined;
+    const result = await getContactsListService({
+      page,
+      perPage,
+      sortBy,
+      sortOrder,
+      type,
+      isFavourite: fav,
+    });
     res.status(200).json({
       status: 200,
-      message: 'Successfully found contacts!',
-      data,
+      message: 'Successfully found contacts',
+      data: result,
     });
   }
 export async function getContactByIdController(req, res, next) {
     const { contactId } = req.params;
     const item = await getContactByIdService(contactId);
-
-    if (!item) throw createHttpError(404, `Contact not found`);
+if (!item) throw createHttpError(404, `Contact not found`);
     res.status(200).json({
       status: 200,
       message: `Successfully found contact with id ${contactId}!`,
@@ -29,8 +37,7 @@ export async function createContactController(req, res, next) {
     if(!name || !phoneNumber || !contactType){
     throw createHttpError(400, 'The fields name, phoneNumber, contactType are required.');
     }
-    const created
-     = await createContactService(req.body);
+    const created = await createContactService(req.body);
     res.status(201).json({
       status: 201,
       message: 'Contact created',

@@ -1,5 +1,45 @@
 import { Contact } from '../models/contact.js';
 
+export async function getContactsListService({
+  page = 1,
+  perPage = 10,
+  sortBy = 'name',
+  sortOrder = 'asc',
+  type,
+  isFavourite
+}){
+  const filter = {};
+  if (type && ['work','home','personal'].includes(type)) {
+    filter.contactType = type;
+  }
+  if (typeof isFavourite === 'boolean') {
+    filter.isFavourite = isFavourite;
+  }
+const pageNumber = Math.max(1, Number(page) || 1);
+const limit = Math.max(1, Math.min(100, Number(perPage) || 10));
+const skip = (pageNumber - 1) * limit;
+const sortField =  sortBy === 'name' ? 'name' : 'name';
+const direction = String(sortOrder).toLowerCase() === 'desc' ? -1 : 1;
+const [totalItems, items] = await Promise.all([
+  Contact.countDocuments(filter),
+  Contact.find(filter)
+    .sort({ [sortField]: direction })
+    .skip(skip)
+    .limit(limit)
+    .lean()
+]);
+const totalPages = Math.max(1, Math.ceil(totalItems / limit));
+return {
+  data: items,
+  page: pageNumber,
+  perPage: limit,
+  totalItems,
+  totalPages,
+  hasPreviousPage: pageNumber > 1,
+  hasNextPage: pageNumber < totalPages
+};
+}
+
 export async function getAllContactsService() {
   return Contact.find().lean();
 };
