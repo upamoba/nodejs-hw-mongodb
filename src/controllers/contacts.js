@@ -66,3 +66,18 @@ export async function deleteContactController(req, res,) {
     if (!removed) throw createHttpError(404, `Contact not found`);
     res.status(204).end();
   }
+
+  // GET /contacts
+const result = await getContactsListService(req.query, req.user._id);
+
+// GET /contacts/:id
+const item = await getContactByIdService(contactId, req.user._id);
+
+// POST /contacts
+const created = await createContactService(req.body, req.user._id);
+
+// PATCH /contacts/:id
+const updated = await updateContactService(contactId, req.body, req.user._id);
+
+// DELETE /contacts/:id
+const removed = await deleteContactService(contactId, req.user._id);

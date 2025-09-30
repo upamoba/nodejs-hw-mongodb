@@ -4,6 +4,8 @@ import pino from 'pino-http';
 import  contactsRouter  from './routes/contacts.js';
 import{ notFoundHandler } from './middlewares/notFoundHandler.js';
 import { errorHandler } from './middlewares/errorHandler.js';
+import cookieParser from 'cookie-parser';
+import authRouter from './routes/auth.js';
 export function setupServer() {
   const app = express();
   app.use(pino({
@@ -13,8 +15,11 @@ export function setupServer() {
 );
   app.use(cors());
   app.use(express.json());
+  app.use(cookieParser());
+   app.use('/auth', authRouter);
  app.set('json spaces', 2);
   app.use('/contacts', contactsRouter);
+
 
   app.use(notFoundHandler);
   app.use(errorHandler);

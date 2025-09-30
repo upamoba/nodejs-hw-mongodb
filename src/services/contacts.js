@@ -1,20 +1,29 @@
 import { Contact } from '../models/contact.js';
 
-export async function getContactsListService({
-  page = 1,
-  perPage = 10,
-  sortBy = 'name',
-  sortOrder = 'asc',
-  type,
+export async function getContactsListService( params, userId) {
+  const {
+    page = 1,
+    perPage = 10,
+    sortBy = 'name',
+    sortOrder = 'asc',
+    type,
   isFavourite
-}){
-  const filter = {};
-  if (type && ['work','home','personal'].includes(type)) {
+} = params;
+
+  const filter = { userId };
+  if (type && ['work', 'home', 'personal'].includes(type)) {
     filter.contactType = type;
   }
-  if (typeof isFavourite === 'boolean') {
-    filter.isFavourite = isFavourite;
+  let fav;
+  if (typeof isFavourite === 'string') {
+    const v = isFavourite.toLowerCase();
+    if (v === 'true') fav = true;
+    if (v === 'false') fav = false;
+  } else if (typeof isFavourite === 'boolean') {
+    fav = isFavourite;
   }
+  if (typeof fav === 'boolean') filter.isFavourite = fav;
+
 const pageNumber = Math.max(1, Number(page) || 1);
 const limit = Math.max(1, Math.min(100, Number(perPage) || 10));
 const skip = (pageNumber - 1) * limit;
@@ -44,18 +53,16 @@ export async function getAllContactsService() {
   return Contact.find().lean();
 };
 
-export async function getContactByIdService(contactId) {
-  return Contact.findById(contactId).lean();
+export async function getContactByIdService(contactId, userId) {
+  return Contact.findOne({ _id: contactId, userId }).lean();
 };
-export async function createContactService(payload)
-{
-  const doc = await Contact.create(payload);
+export async function createContactService(payload, userId) {
+  const doc = await Contact.create({ ...payload, userId });
   return doc.toObject();
 }
-export async function updateContactService(contactId, payload) {
-  const updated = await Contact.findByIdAndUpdate(contactId, payload, { new: true, runValidators: true }).lean();
-  return updated;
+export async function updateContactService(contactId, payload, userId) {
+  return Contact.findOneAndUpdate({ _id: contactId, userId }, payload, { new: true, runValidators: true }).lean();
 }
-export async function deleteContactService(contactId) {
-  return Contact.findByIdAndDelete(contactId).lean();
+export async function deleteContactService(contactId, userId) {
+  return Contact.findOneAndDelete({ _id: contactId, userId }).lean();
 }
