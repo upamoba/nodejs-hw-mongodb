@@ -67,25 +67,25 @@ export async function deleteContactController(req, res,) {
     res.status(204).end();
   }
 
-// GET /contacts
-const result = await getContactsListService(req.query, req.user._id);
-res.status(200).json({ status: 200, message: 'Contacts found!', data: result });
+// // GET /contacts
+// const result = await getContactsListService(req.query, req.user._id);
+// res.status(200).json({ status: 200, message: 'Contacts found!', data: result });
 
-// GET /contacts/:contactId
-const item = await getContactByIdService(req.params.contactId, req.user._id);
-if (!item) throw createHttpError(404, 'Contact not found');
-res.status(200).json({ status: 200, message: `Contact with id ${req.params.contactId} found!`, data: item });
+// // GET /contacts/:contactId
+// const item = await getContactByIdService(req.params.contactId, req.user._id);
+// if (!item) throw createHttpError(404, 'Contact not found');
+// res.status(200).json({ status: 200, message: `Contact with id ${req.params.contactId} found!`, data: item });
 
-// POST /contacts
-const created = await createContactService(req.body, req.user._id);
-res.status(201).json({ status: 201, message: 'Contact created successfully!', data: created });
+// // POST /contacts
+// const created = await createContactService(req.body, req.user._id);
+// res.status(201).json({ status: 201, message: 'Contact created successfully!', data: created });
 
-// PATCH /contacts/:contactId
-const updated = await updateContactService(req.params.contactId, req.body, req.user._id);
-if (!updated) throw createHttpError(404, 'Contact not found');
-res.status(200).json({ status: 200, message: 'Contact updated successfully!', data: updated });
+// // PATCH /contacts/:contactId
+// const updated = await updateContactService(req.params.contactId, req.body, req.user._id);
+// if (!updated) throw createHttpError(404, 'Contact not found');
+// res.status(200).json({ status: 200, message: 'Contact updated successfully!', data: updated });
 
-// DELETE /contacts/:contactId
-const removed = await deleteContactService(req.params.contactId, req.user._id);
-if (!removed) throw createHttpError(404, 'Contact not found');
-res.status(204).end();
+// // DELETE /contacts/:contactId
+// const removed = await deleteContactService(req.params.contactId, req.user._id);
+// if (!removed) throw createHttpError(404, 'Contact not found');
+// res.status(204).end();
