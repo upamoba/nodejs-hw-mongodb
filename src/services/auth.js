@@ -76,7 +76,7 @@ export async function refreshSession({ refreshFromCookie}) {
   return { accessToken: newAccess, refreshToken: newRefresh, session };
 }
 
-export async function logoutSession({ refreshToken }) {
-  if (!refreshToken) return;
-  await Session.deleteOne({ refreshToken });
+export async function logoutUser({ refreshFromCookie }) {
+  if (!refreshFromCookie) return;
+  await Session.deleteOne({ refreshToken: refreshFromCookie });
 }
