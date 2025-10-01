@@ -11,17 +11,13 @@ export async function getContactsListService( params, userId) {
 } = params;
 
   const filter = { userId };
-  if (type && ['work', 'home', 'personal'].includes(type)) {
-    filter.contactType = type;
-  }
+  if (type && ['work', 'home', 'personal'].includes(type)) filter.contactType= type;
   let fav;
   if (typeof isFavourite === 'string') {
     const v = isFavourite.toLowerCase();
     if (v === 'true') fav = true;
     if (v === 'false') fav = false;
-  } else if (typeof isFavourite === 'boolean') {
-    fav = isFavourite;
-  }
+  } else if (typeof isFavourite === 'boolean') fav = isFavourite;
   if (typeof fav === 'boolean') filter.isFavourite = fav;
 
 const pageNumber = Math.max(1, Number(page) || 1);

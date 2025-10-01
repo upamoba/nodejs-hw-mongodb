@@ -73,11 +73,7 @@ await Session.create({
   return { accessToken, refreshToken };
 }
 
-<<<<<<< Updated upstream
 export async function logoutUser({ refreshFromCookie }) {
-=======
-export async function logoutUser(refreshFromCookie ) {
->>>>>>> Stashed changes
   if (!refreshFromCookie) return;
   await Session.deleteOne({ refreshToken: refreshFromCookie });
 }
