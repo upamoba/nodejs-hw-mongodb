@@ -1,7 +1,6 @@
 
-import jwt from 'jsonwebtoken';
 import { getEnvVariable } from './env.js';
-
+import crypto from 'node:crypto';
 
 const ACCESS_SECRET = getEnvVariable('JWT_ACCESS_SECRET');
 const REFRESH_SECRET = getEnvVariable('JWT_REFRESH_SECRET');
@@ -9,7 +8,7 @@ const ACCESS_EXPIRES = process.env.ACCESS_TOKEN_EXPIRES_IN || '15m';
 const REFRESH_EXPIRES = process.env.REFRESH_TOKEN_EXPIRES_IN || '30d';
 
 export function createAccessToken(payload) {
-  return jwt.sign(payload, ACCESS_SECRET, { expiresIn: ACCESS_EXPIRES });
+  return (payload, ACCESS_SECRET, { expiresIn: ACCESS_EXPIRES });
 }
 
 export function createRefreshToken(payload) {

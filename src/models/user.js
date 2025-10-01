@@ -6,6 +6,6 @@ const userSchema = new Schema({
     email: { type: String, required: true, unique: true, lowercase: true, trim: true },
     password: { type: String, required: true },
 
-}, { versionKey: false, timestamps: true,collation: 'user' });
+}, { timestamps: true,collation: 'users' });
 export const User = model('user', userSchema);
 

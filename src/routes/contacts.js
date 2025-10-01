@@ -9,7 +9,6 @@ updateContactController,
 import  {isValidId} from '../middlewares/isValidId.js';
 import { createContactSchema,updateContactSchema } from '../validation/contactSchemas.js';
 import { authenticate } from '../middlewares/authenticate.js';
-import router from './auth.js';
 const contactsRouter = Router();
 contactsRouter.use(authenticate);
 
