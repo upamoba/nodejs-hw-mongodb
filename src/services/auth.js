@@ -8,28 +8,28 @@ import {
   createRefreshToken,
   verifyRefresh,
 } from '../utils/token.js';
-
+const token = (n = 30) => crypto.randomBytes(n).toString('base64url');
 const ACCESS_TTL_MS = 15 * 60 * 1000;
 const REFRESH_TTL_MS = 30 * 24 * 60 * 60 * 1000;
 export async function registerUser({ name, email, password }) {
   const exists = await User.findOne({ email });
   if (exists) {
-    throw createHttpError(409, 'Email in use');
+    throw new createHttpError.Conflict('Email in use');
   }
 
   const hash = await bcrypt.hash(password, 10);
   const user = await User.create({ name, email, password: hash });
 
-  const { password: _, ...safeUser } = user.toObject();
+  const { password: _omit, ...safeUser } = user.toObject();
   return safeUser;
 }
 
 export async function loginUser({ email, password }) {
   const user = await User.findOne({ email });
-  if (!user) throw createHttpError(401, 'Email or password is wrong');
+  if (!user) throw new  createHttpError.Unauthorized('Email or password is incorrect');
 
   const isMatch = await bcrypt.compare(password, user.password);
-  if (!isMatch) throw createHttpError(401, 'Email or password is wrong');
+  if (!isMatch) throw new createHttpError.Unauthorized('Email or password is incorrect');
 
 
   await Session.deleteMany({ userId: user._id });
@@ -46,32 +46,21 @@ export async function loginUser({ email, password }) {
     refreshTokenValidUntil: new Date(now + REFRESH_TTL_MS),
   });
 
-  return { session, accessToken, refreshToken };
+  return {  accessToken, refreshToken,sessionId: String(session._id),userId: String(user._id)  };
 }
 
-export async function refreshSession({ refreshToken }) {
-  if (!refreshToken) throw createHttpError(401, 'No refresh token');
+export async function refreshSession({ refreshFromCookie}) {
+  if (!refreshFromCookie) throw new createHttpError.Unauthorized('No refresh token');
 
-  let payload;
-  try {
-    payload = verifyRefresh(refreshToken);
-  } catch {
-    throw createHttpError(401, 'Invalid refresh token');
+ const prev = await Session.findOne({ refreshToken: refreshFromCookie });
+  if (!prev || prev.refreshTokenValidUntil < new Date)
+    {throw new createHttpError.Unauthorized('Invalid refresh token');
   }
 
-  const current = await Session.findOne({ refreshToken });
-  if (!current) throw createHttpError(401, 'Session not found');
-  if (current.refreshTokenValidUntil.getTime() <= Date.now()) {
-
-    await Session.deleteOne({ _id: current._id });
-    throw createHttpError(401, 'Refresh token expired');
-  }
+  await Session.deleteOne({ _id: prev._id });
 
 
-  await Session.deleteOne({ _id: current._id });
-
-
-  const userId = current.userId;
+  const userId = prev.userId;
   const newAccess = createAccessToken({ sub: String(userId) });
   const newRefresh = createRefreshToken({ sub: String(userId) });
 
