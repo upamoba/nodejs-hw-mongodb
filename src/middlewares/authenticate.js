@@ -3,8 +3,8 @@ import { Session } from '../models/session.js';
 import { User } from '../models/user.js';
 
 export async function authenticate(req, _res, next) {
-  const auth = req.get('Authorization') || '';
-  const [type, token] = auth.split(' ');
+  const hdr = req.get('Authorization') || '';
+  const [type, token] = hdr.split(' ');
   if (type !== 'Bearer' || !token) throw new createHttpError.Unauthorized('Not authorized');
 
   const session = await Session.findOne({ accessToken: token });
