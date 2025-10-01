@@ -14,7 +14,7 @@ const contactSchema = new Schema(
     },
     userId: { type: Schema.Types.ObjectId, ref: 'user', required: true, index: true },
   },
-  { timestamps: true, collation: 'contacts' }
+  { timestamps: true, versionKey: false,  }
 );
 
 export const Contact = model('Contact', contactSchema, 'contacts');

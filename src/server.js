@@ -16,6 +16,10 @@ export function setupServer() {
   app.use(cors({ origin: true, credentials: true }));
   app.use(express.json());
   app.use(cookieParser());
+  app.get('/', (_req, res) => {
+  res.json({ status: 'ok', service: 'contacts-api', branch: 'hw5-auth' });
+});
+app.get('/healthz', (_req, res) => res.status(200).send('ok'));
    app.use('/auth', authRouter);
  app.set('json spaces', 2);
   app.use('/contacts', contactsRouter);
