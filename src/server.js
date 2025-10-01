@@ -13,7 +13,7 @@ export function setupServer() {
     transport: process.env.NODE_ENV === 'development' ? { target: 'pino-pretty' } : undefined,
   }),
 );
-  app.use(cors());
+  app.use(cors({ origin: true, credentials: true }));
   app.use(express.json());
   app.use(cookieParser());
    app.use('/auth', authRouter);

@@ -3,14 +3,14 @@ import bcrypt from 'bcrypt';
 import createHttpError from 'http-errors';
 import { User } from '../models/user.js';
 import { Session } from '../models/session.js';
-import {
-  createAccessToken,
-  createRefreshToken,
-  verifyRefresh,
-} from '../utils/token.js';
+// import {
+//   createAccessToken,
+//   createRefreshToken,
+//   verifyRefresh,
+// } from '../utils/token.js';
 const token = (n = 30) => crypto.randomBytes(n).toString('base64url');
-const ACCESS_TTL_MS = 15 * 60 * 1000;
-const REFRESH_TTL_MS = 30 * 24 * 60 * 60 * 1000;
+const ACCESS_TTL = 15 * 60 * 1000;
+const REFRESH_TTL = 30 * 24 * 60 * 60 * 1000;
 export async function registerUser({ name, email, password }) {
   const exists = await User.findOne({ email });
   if (exists) {
@@ -34,23 +34,22 @@ export async function loginUser({ email, password }) {
 
   await Session.deleteMany({ userId: user._id });
 
-  const accessToken = createAccessToken({ sub: String(user._id) });
-  const refreshToken = createRefreshToken({ sub: String(user._id) });
+  const accessToken = token();
+  const refreshToken = token();
 
-  const now = Date.now();
   const session = await Session.create({
     userId: user._id,
     accessToken,
     refreshToken,
-    accessTokenValidUntil: new Date(now + ACCESS_TTL_MS),
-    refreshTokenValidUntil: new Date(now + REFRESH_TTL_MS),
+    accessTokenValidUntil: new Date(Date.now() + ACCESS_TTL),
+    refreshTokenValidUntil: new Date(Date.now() + REFRESH_TTL),
   });
 
   return {  accessToken, refreshToken,sessionId: String(session._id),userId: String(user._id)  };
 }
 
 export async function refreshSession({ refreshFromCookie}) {
-  if (!refreshFromCookie) throw new createHttpError.Unauthorized('No refresh token');
+  if (!refreshFromCookie) throw new createHttpError.Unauthorized('Refresh token is missing');
 
  const prev = await Session.findOne({ refreshToken: refreshFromCookie });
   if (!prev || prev.refreshTokenValidUntil < new Date)
@@ -60,23 +59,25 @@ export async function refreshSession({ refreshFromCookie}) {
   await Session.deleteOne({ _id: prev._id });
 
 
-  const userId = prev.userId;
-  const newAccess = createAccessToken({ sub: String(userId) });
-  const newRefresh = createRefreshToken({ sub: String(userId) });
 
-  const now = Date.now();
-  const session = await Session.create({
-    userId,
-    accessToken: newAccess,
-    refreshToken: newRefresh,
-    accessTokenValidUntil: new Date(now + ACCESS_TTL_MS),
-    refreshTokenValidUntil: new Date(now + REFRESH_TTL_MS),
+  const accessToken = token();
+  const refreshToken = token();
+await Session.create({
+    userId: prev.userId,
+    accessToken,
+    refreshToken,
+    accessTokenValidUntil: new Date(Date.now() + ACCESS_TTL),
+    refreshTokenValidUntil: new Date(Date.now() + REFRESH_TTL),
   });
 
-  return { accessToken: newAccess, refreshToken: newRefresh, session };
+  return { accessToken, refreshToken };
 }
 
+<<<<<<< Updated upstream
 export async function logoutUser({ refreshFromCookie }) {
+=======
+export async function logoutUser(refreshFromCookie ) {
+>>>>>>> Stashed changes
   if (!refreshFromCookie) return;
   await Session.deleteOne({ refreshToken: refreshFromCookie });
 }
