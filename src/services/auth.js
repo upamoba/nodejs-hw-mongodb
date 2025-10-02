@@ -44,7 +44,7 @@ export async function loginUser({ email, password }) {
   return {  accessToken, refreshToken,sessionId: String(session._id),userId: String(user._id)  };
 }
 
-export async function refreshSession({ refreshFromCookie}) {
+export async function refreshSession(refreshFromCookie) {
   if (!refreshFromCookie) throw new createHttpError.Unauthorized('Refresh token is missing');
 
  const prev = await Session.findOne({ refreshToken: refreshFromCookie });
@@ -69,11 +69,7 @@ await Session.create({
   return { accessToken, refreshToken };
 }
 
-export async function logoutUser({ refreshFromCookie, accessFromHeader }) {
-  await Session.deleteOne({
-  $or: [
-    refreshFromCookie ? { refreshToken: refreshFromCookie } : null,
-    accessFromHeader ? { accessToken: accessFromHeader } : null,
-  ].filter(Boolean),
-  });
+export async function logoutUser( refreshFromCookie ) {
+  if (!refreshFromCookie) return;
+  await Session.deleteOne({ refreshToken: refreshFromCookie });
 }

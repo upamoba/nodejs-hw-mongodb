@@ -6,7 +6,7 @@ import{ notFoundHandler } from './middlewares/notFoundHandler.js';
 import { errorHandler } from './middlewares/errorHandler.js';
 import cookieParser from 'cookie-parser';
 import authRouter from './routes/auth.js';
-import { authenticate } from './middlewares/authenticate.js';
+
 export function setupServer() {
   const app = express();
   app.use(pino({
@@ -20,7 +20,7 @@ export function setupServer() {
 
    app.use('/auth', authRouter);
  app.set('json spaces', 2);
-  app.use('/contacts',authenticate, contactsRouter);
+  app.use('/contacts',contactsRouter);
 
 
   app.use(notFoundHandler);

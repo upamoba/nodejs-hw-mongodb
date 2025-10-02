@@ -1,17 +1,13 @@
-import { getContactsListService, getContactByIdService,
-  createContactService,
-updateContactService,
-deleteContactService } from '../services/contacts.js';
+;
 import createHttpError from 'http-errors';
 import * as service from '../services/contacts.js';
 
 export async function getAllContactsController(req, res)  {
     const { page , perPage , sortBy , sortOrder , type, isFavourite } = req.query;
-    const userId = req.user._id;
     const data = await service.getContactsListService({
-      userId,
-      page : Number(page),
-      perPage: Number(perPage),
+      userId: req.user._id,
+      page,
+      perPage,
       sortBy,
       sortOrder,
       isFavourite: typeof isFavourite === 'string' ? isFavourite === 'true' : isFavourite,
@@ -25,9 +21,9 @@ export async function getAllContactsController(req, res)  {
   }
 export async function getContactByIdController(req, res, next) {
 const { contactId } = req.params;
-const userId = req.user._id;
 
-  const contact = await service.getContactByIdService(contactId, userId);
+
+  const contact = await service.getContactByIdService({ contactId, userId: req.user._id });
   if (!contact) throw new createHttpError.NotFound(`Contact not found`);
   res.status(200).json({
     status: 200,
@@ -37,8 +33,7 @@ const userId = req.user._id;
   }
 
 export async function createContactController(req, res, next) {
-   const  userId  = req.user._id;
-    const created = await service.createContactService(req.body, userId);
+    const created = await service.createContactService({ payload: req.body, userId: req.user._id });
     res.status(201).json({
       status: 201,
       message: 'Contact successfully created',
@@ -48,8 +43,7 @@ export async function createContactController(req, res, next) {
 
 export async function updateContactController(req, res) {
   const { contactId } = req.params;
-  const userId = req.user._id;
-    const updated = await service.updateContactService(contactId,  req.body, userId);
+    const updated = await service.updateContactService({ contactId, payload: req.body, userId: req.user._id });
     if (!updated) throw new createHttpError.NotFound(`Contact not found`);
     res.status(200).json({
         status: 200,
@@ -60,8 +54,7 @@ export async function updateContactController(req, res) {
 
 export async function deleteContactController(req, res) {
   const { contactId } = req.params;
-  const userId = req.user._id;
-  const removed = await service.deleteContactService(contactId, userId);
+  const removed = await service.deleteContactService({ contactId, userId: req.user._id });
   if (!removed) throw new createHttpError.NotFound(`Contact not found`);
   res.status(204).end();
 };
