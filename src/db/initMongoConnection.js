@@ -19,3 +19,4 @@ export async function initMongoConnection() {
   await mongoose.connect(uri);
   console.log('Mongo connection successfully established!');
 };
+

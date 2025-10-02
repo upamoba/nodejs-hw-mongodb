@@ -17,12 +17,12 @@ export async function getContactsListService({
 const pageNumber = Math.max(1, Number(page) || 1);
 const limit = Math.max(1, Math.min(100, Number(perPage) || 10));
 const skip = (pageNumber - 1) * limit;
-const sortField = 'name';
+// const sortBy = 'name';
 const direction = String(sortOrder).toLowerCase() === 'desc' ? -1 : 1;
 const [totalItems, items] = await Promise.all([
   Contact.countDocuments(filter),
   Contact.find(filter)
-    .sort({ [sortField]: direction })
+    .sort({ [sortBy || 'name']: direction })
     .skip(skip)
     .limit(limit)
     .lean()
@@ -54,6 +54,5 @@ export async function updateContactService(contactId, payload, userId) {
   return Contact.findOneAndUpdate({ _id: contactId, userId }, payload, { new: true, runValidators: true }).lean();
 }
 export async function deleteContactService(contactId, userId) {
- const result = await Contact.deleteOne({ _id: contactId, userId });
-  return result.deletedCount > 0;
+ return Contact.findOneAndDelete({ _id: contactId, userId }).lean();
 }
