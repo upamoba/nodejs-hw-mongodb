@@ -4,7 +4,7 @@ import { User } from '../models/user.js';
 
 export async function authenticate(req, _res, next) {
   try {
-    const header = req.get('Authorization') || req.get('authorization') || '';
+    const header = req.get('Authorization') || '';
     const [scheme, token] = header.split(' ');
     if (scheme !== 'Bearer' || !token) {
       return next(new createHttpError.Unauthorized('Not authorized'));
@@ -19,8 +19,9 @@ const user = await User.findById(session.userId).lean();
       return next(new createHttpError.Unauthorized('User not found'));
     }
     req.user = user;
-    return next();
+    req.session = session;
+    next();
   } catch (error) {
-    return next(error);
+    next(error);
   }
 }
