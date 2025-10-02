@@ -6,6 +6,7 @@ import{ notFoundHandler } from './middlewares/notFoundHandler.js';
 import { errorHandler } from './middlewares/errorHandler.js';
 import cookieParser from 'cookie-parser';
 import authRouter from './routes/auth.js';
+import { authenticate } from './middlewares/authenticate.js';
 export function setupServer() {
   const app = express();
   app.use(pino({
@@ -16,13 +17,10 @@ export function setupServer() {
   app.use(cors({ origin: true, credentials: true }));
   app.use(express.json());
   app.use(cookieParser());
-  app.get('/', (_req, res) => {
-  res.json({ status: 'ok', service: 'contacts-api', branch: 'hw5-auth' });
-});
-app.get('/healthz', (_req, res) => res.status(200).send('ok'));
+
    app.use('/auth', authRouter);
  app.set('json spaces', 2);
-  app.use('/contacts', contactsRouter);
+  app.use('/contacts',authenticate, contactsRouter);
 
 
   app.use(notFoundHandler);
