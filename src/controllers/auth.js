@@ -1,13 +1,12 @@
 
 import { registerUser, loginUser, refreshSession, logoutUser } from '../services/auth.js';
-
-const cookieOpts = {
+const COOKIE_MAX_AGE = 30 * 24 * 60 * 60 * 1000;
+const baseCookie = {
   httpOnly: true,
   sameSite: 'lax',
-  secure: process.env.NODE_ENV === 'production',
   path: '/',
-  maxAge: 30 * 24 * 60 * 60 * 1000,
 };
+if (process.env.NODE_ENV === 'production') baseCookie.secure = true;
 
 export async function registerController(req, res) {
   const user = await registerUser(req.body);
@@ -16,24 +15,23 @@ export async function registerController(req, res) {
 
 export async function loginController(req, res) {
   const { accessToken, refreshToken } = await loginUser(req.body);
-  res.cookie('refreshToken', refreshToken, cookieOpts);
+  res.cookie('refreshToken', refreshToken,{ ...baseCookie, maxAge: COOKIE_MAX_AGE });
   res.status(200).json({ status: 200, message: 'Successfully logged in an user!', data: { accessToken } });
 }
 
 export async function refreshController(req, res) {
-  const rt = req.cookies?.refreshToken;
-  const { accessToken, refreshToken } = await refreshSession(rt);
-  res.cookie('refreshToken', refreshToken, cookieOpts);
+  console.log('raw cookie:', req.headers.cookie);
+  console.log('parsed cookies:', req.cookies);
+  const refreshFromCookie = req.cookies?.refreshToken;
+  const { accessToken, refreshToken } = await refreshSession(refreshFromCookie);
+  res.cookie('refreshToken', refreshToken, { ...baseCookie, maxAge: COOKIE_MAX_AGE });
   res.status(200).json({ status: 200, message: 'Successfully refreshed a session!', data: { accessToken } });
 }
 
 export async function logoutController(req, res) {
   const refreshFromCookie = req.cookies?.refreshToken;
-  const accessFromHeader = (req.get('Authorization') || '').split(' ')[1];
-  await logoutUser({ refreshFromCookie, accessFromHeader });
-  res.clearCookie('refreshToken',{
-    httpOnly: true, sameSite: 'lax', secure: false
-  });
+  await logoutUser( refreshFromCookie);
+  res.clearCookie('refreshToken', baseCookie);
   res.status(204).end();
 }
 
