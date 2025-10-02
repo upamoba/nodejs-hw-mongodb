@@ -28,9 +28,12 @@ export async function refreshController(req, res) {
 }
 
 export async function logoutController(req, res) {
-  const rt = req.cookies?.refreshToken;
-  await logoutUser(rt);
-  res.clearCookie('refreshToken', cookieOpts);
+  const refreshFromCookie = req.cookies?.refreshToken;
+  const accessFromHeader = (req.get('Authorization') || '').split(' ')[1];
+  await logoutUser({ refreshFromCookie, accessFromHeader });
+  res.clearCookie('refreshToken',{
+    httpOnly: true, sameSite: 'lax', secure: false
+  });
   res.status(204).end();
 }
 

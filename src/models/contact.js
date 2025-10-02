@@ -10,12 +10,10 @@ const contactSchema = new Schema(
       type: String,
       enum: ['work', 'home', 'personal'],
       required: true,
-      default: 'personal'
-    },
-    userId: { type: Schema.Types.ObjectId, ref: 'user', required: true, index: true },
-  },
-  { timestamps: true, versionKey: false,  }
+      default: 'personal'},
+ userId: { type: Schema.Types.ObjectId, ref: 'user', required: true, index: true },
+  }, { timestamps: true, versionKey: false,  }
 );
 
-export const Contact = model('Contact', contactSchema, 'contacts');
+export const Contact = model('Contact', contactSchema, );
 

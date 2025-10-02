@@ -3,11 +3,7 @@ import bcrypt from 'bcrypt';
 import createHttpError from 'http-errors';
 import { User } from '../models/user.js';
 import { Session } from '../models/session.js';
-// import {
-//   createAccessToken,
-//   createRefreshToken,
-//   verifyRefresh,
-// } from '../utils/token.js';
+
 const token = (n = 30) => crypto.randomBytes(n).toString('base64url');
 const ACCESS_TTL = 15 * 60 * 1000;
 const REFRESH_TTL = 30 * 24 * 60 * 60 * 1000;
@@ -73,7 +69,11 @@ await Session.create({
   return { accessToken, refreshToken };
 }
 
-export async function logoutUser({ refreshFromCookie }) {
-  if (!refreshFromCookie) return;
-  await Session.deleteOne({ refreshToken: refreshFromCookie });
+export async function logoutUser({ refreshFromCookie, accessFromHeader }) {
+  await Session.deleteOne({
+  $or: [
+    refreshFromCookie ? { refreshToken: refreshFromCookie } : null,
+    accessFromHeader ? { accessToken: accessFromHeader } : null,
+  ].filter(Boolean),
+  });
 }
