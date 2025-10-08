@@ -81,7 +81,7 @@ export async function updateContactController(req, res) {
   }
 
     const updated = await service.updateContactService( {contactId, userId: req.user._id,payload: update,}
-      // req.body , req.file
+
       );
     if (!updated) throw new createHttpError.NotFound(`Contact not found`);
     res.status(200).json({

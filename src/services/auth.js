@@ -5,10 +5,7 @@ import { User } from '../models/user.js';
 import { Session } from '../models/session.js';
 import { mailer, sendMail } from '../utils/emailTransporter.js';
 import { createResetToken, verifyResetToken } from '../utils/jwtReset.js';
-// { signResetToken, verifyResetToken }
-;
 
-// const { APP_DOMAIN = 'http://localhost:3000' } = process.env;
 const token = (n = 30) => crypto.randomBytes(n).toString('base64url');
 const ACCESS_TTL = 15 * 60 * 1000;
 const REFRESH_TTL = 30 * 24 * 60 * 60 * 1000;
@@ -100,25 +97,13 @@ try {
   }
 }
 
-// function normalizeToken(input) {
-//   if (typeof input === 'string') {
 
-//     const m = input.match(/[?&]token=([^&]+)/);
-//     return decodeURIComponent(m ? m[1] : input).trim();
-//   }
-//   if (input && typeof input === 'object' && typeof input.token === 'string') {
-//    return input.token.trim();
-//   }
-//   throw new createHttpError.BadRequest('Token must be a string');
-// }
 
 export async function resetPasswordService({ token, password }) {
-// if (typeof password !== 'string' || password.length < 8) {
-// throw new createHttpError.BadRequest('Password is required and must be at least 8 chars');
-//   }
+
   let payload;
   try {
-    //  const normalized = normalizeToken(token);
+
     payload = verifyResetToken(token);
   } catch{
     throw new createHttpError.Unauthorized('Invalid or expired token');

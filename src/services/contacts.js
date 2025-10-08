@@ -50,12 +50,6 @@ export async function getContactByIdService({ contactId, userId }) {
 };
 export async function createContactService( payload = {} ) {
 
-  // if (file) {
-  //   const url = await uploadToCloudinary(file.path);
-  //   payload.photo = url;
-  //   await FileSystem.unlink(file.path);
-  // }
-  // payload.userId = userId;
   const doc = await Contact.create({...payload});
   return doc.toObject();
 }

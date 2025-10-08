@@ -1,6 +1,6 @@
 import { sendMail } from '../utils/emailTransporter.js';
 import { User } from '../models/user.js';
-// import { signResetToken } from '../utils/jwtReset.js';
+
 import { registerUser, loginUser, refreshSession, logoutUser,sendResetEmailService, resetPasswordService  } from '../services/auth.js';
 const COOKIE_MAX_AGE = 30 * 24 * 60 * 60 * 1000;
 const baseCookie = {
