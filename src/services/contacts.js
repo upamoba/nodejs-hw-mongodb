@@ -1,5 +1,5 @@
 import { Contact } from '../models/contact.js';
-
+import { uploadImageBuffer } from '../utils/cloudinary.js';
 
 export async function getContactsListService({
     userId,
@@ -47,12 +47,27 @@ export async function getAllContactsService() {
 export async function getContactByIdService({ contactId, userId }) {
   return Contact.findOne({ _id: contactId, userId }).lean();
 };
-export async function createContactService({ payload, userId }) {
-  const doc = await Contact.create({ ...payload, userId });
+export async function createContactService({ payload, file }) {
+  let photo;
+  if (file?.buffer) {
+    const result = await uploadImageBuffer(file.buffer, `c_${Date.now()}`);
+    photo = result.secure_url;
+  }
+  const doc = await Contact.create({ ...payload, ...(photo ? { photo } : {}) });
   return doc.toObject();
 }
-export async function updateContactService({ contactId, payload, userId }) {
-  return Contact.findOneAndUpdate({ _id: contactId, userId }, payload, { new: true, runValidators: true }).lean();
+export async function updateContactService({ contactId, payload, file }) {
+  let photoUpdate = {};
+  if (file?.buffer) {
+    const result = await uploadImageBuffer(file.buffer, `c_${Date.now()}`);
+    photoUpdate = { photo: result.secure_url };
+  }
+const updated = await Contact.findOneAndUpdate(
+    { _id: contactId, userId: payload.userId },
+    { $set: { ...payload, ...photoUpdate } },
+    { new: true,runValidators: true },
+  ).lean();
+  return updated;
 }
 export async function deleteContactService({ contactId, userId }) {
  return Contact.findOneAndDelete({ _id: contactId, userId }).lean();

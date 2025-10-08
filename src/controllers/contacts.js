@@ -1,4 +1,4 @@
-;
+
 import createHttpError from 'http-errors';
 import * as service from '../services/contacts.js';
 
@@ -33,7 +33,8 @@ const { contactId } = req.params;
   }
 
 export async function createContactController(req, res, next) {
-    const created = await service.createContactService({ payload: req.body, userId: req.user._id });
+  const payload = { ...req.body, userId: req.user._id };
+    const created = await service.createContactService( payload,  req.file );
     res.status(201).json({
       status: 201,
       message: 'Contact successfully created',
@@ -42,8 +43,8 @@ export async function createContactController(req, res, next) {
   }
 
 export async function updateContactController(req, res) {
-  const { contactId } = req.params;
-    const updated = await service.updateContactService({ contactId, payload: req.body, userId: req.user._id });
+    const payload = { ...req.body, userId: req.user._id };
+    const updated = await service.updateContactService(req.params.contactId, payload, req.file );
     if (!updated) throw new createHttpError.NotFound(`Contact not found`);
     res.status(200).json({
         status: 200,
