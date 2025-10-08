@@ -63,9 +63,9 @@ export async function createContactController(req, res, next) {
   }
 
 export async function updateContactController(req, res) {
- const { _id: userId } = req.user;
+
   const { contactId } = req.params;
-  const updates = { ...req.body };
+  const update = { ...req.body };
   if (req.file) {
     console.log('updating photo', {
       field: req.file.fieldname,
@@ -73,15 +73,15 @@ export async function updateContactController(req, res) {
       size: req.file.size,
     });
 
-    const { secure_url } = await uploadToCloudinary(
+    const { secureUrl } = await uploadToCloudinary(
       req.file.buffer,
       req.file.originalname || 'photo',
     );
-    payload.photo = secure_url;
+    update.photo = secureUrl;
   }
 
-    const updated = await service.updateContactService( contactId, userId, updates
-      //req.user._id, req.body , req.file
+    const updated = await service.updateContactService( {contactId, userId: req.user._id,payload: update,}
+      // req.body , req.file
       );
     if (!updated) throw new createHttpError.NotFound(`Contact not found`);
     res.status(200).json({
