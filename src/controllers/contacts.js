@@ -1,6 +1,7 @@
 
 import createHttpError from 'http-errors';
 import * as service from '../services/contacts.js';
+import { uploadToCloudinary } from '../utils/cloudinary.js';
 
 export async function getAllContactsController(req, res)  {
     const { page , perPage , sortBy , sortOrder , type, isFavourite } = req.query;
@@ -33,8 +34,27 @@ const { contactId } = req.params;
   }
 
 export async function createContactController(req, res, next) {
-  const payload = { ...req.body, userId: req.user._id };
-    const created = await service.createContactService( payload,  req.file );
+  const { _id: userId } = req.user;
+ const payload = { ...req.body, userId };
+
+  if (req.file) {
+    try {
+      console.log('uploading file', {
+        field: req.file.fieldname,
+        mimetype: req.file.mimetype,
+        size: req.file.size,
+      });
+      const { secure_url } = await uploadToCloudinary(
+        req.file.buffer,
+        req.file.originalname || 'photo'
+      );
+      payload.photo = secure_url;
+    } catch (e) {
+      console.error(e);
+      throw createHttpError(400, 'Invalid image file');
+    }
+  }
+    const created = await service.createContactService(payload);
     res.status(201).json({
       status: 201,
       message: 'Contact successfully created',
@@ -43,8 +63,26 @@ export async function createContactController(req, res, next) {
   }
 
 export async function updateContactController(req, res) {
-    const payload = { ...req.body, userId: req.user._id };
-    const updated = await service.updateContactService(req.params.contactId, payload, req.file );
+ const { _id: userId } = req.user;
+  const { contactId } = req.params;
+  const updates = { ...req.body };
+  if (req.file) {
+    console.log('updating photo', {
+      field: req.file.fieldname,
+      mimetype: req.file.mimetype,
+      size: req.file.size,
+    });
+
+    const { secure_url } = await uploadToCloudinary(
+      req.file.buffer,
+      req.file.originalname || 'photo',
+    );
+    payload.photo = secure_url;
+  }
+
+    const updated = await service.updateContactService( contactId, userId, updates
+      //req.user._id, req.body , req.file
+      );
     if (!updated) throw new createHttpError.NotFound(`Contact not found`);
     res.status(200).json({
         status: 200,

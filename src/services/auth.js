@@ -3,8 +3,9 @@ import bcrypt from 'bcrypt';
 import createHttpError from 'http-errors';
 import { User } from '../models/user.js';
 import { Session } from '../models/session.js';
-import { sendMail } from '../utils/emailTransporter.js';
-import { signResetToken, verifyResetToken } from '../utils/jwtReset.js';
+import { mailer, sendMail } from '../utils/emailTransporter.js';
+import { createResetToken, verifyResetToken } from '../utils/jwtReset.js';
+// { signResetToken, verifyResetToken }
 ;
 
 // const { APP_DOMAIN = 'http://localhost:3000' } = process.env;
@@ -84,47 +85,42 @@ export async function sendResetEmailService(email) {
   const user = await User.findOne({ email });
   if (!user) throw new createHttpError.NotFound('User with this email not found');
 
-  const token = signResetToken({ email: user.email });
+  const token = createResetToken({ email });
+  const url = `${process.env.APP_DOMAIN}/reset-password?token=${encodeURIComponent(token)}`;
 
-  const link = `${APP_DOMAIN}/reset-password?token=${encodeURIComponent(token)}`;
-  const html = `
-  <p>Hi, ${user.name}</p>
-  <p>To reset your password, please click the link below:</p>
-  <p><a href="${link}">${link}</a></p>
-`;
 try {
-    await sendMail({
-      to: user.email,
-      subject: 'Password Reset',
-      html,
+    await mailer.sendMail({
+        from: process.env.SMTP_FROM,
+      to: email,
+      subject: 'Reset your password',
+      html: `<p>Click to reset: <a href="${url}">${url}</a></p><p>Valid for 5 minutes.</p>`,
     });
-  } catch (error) {
-    throw new createHttpError(500, 'Failed to send email');
+  } catch  {
+    throw new createHttpError(500, 'Failed to send email,please try again later');
   }
 }
 
-function normalizeToken(input) {
-  if (typeof input === 'string') {
+// function normalizeToken(input) {
+//   if (typeof input === 'string') {
 
-    const m = input.match(/[?&]token=([^&]+)/);
-    return decodeURIComponent(m ? m[1] : input).trim();
-  }
-  if (input && typeof input === 'object' && typeof input.token === 'string') {
-   return input.token.trim();
-  }
-  throw new createHttpError.BadRequest('Token must be a string');
-}
+//     const m = input.match(/[?&]token=([^&]+)/);
+//     return decodeURIComponent(m ? m[1] : input).trim();
+//   }
+//   if (input && typeof input === 'object' && typeof input.token === 'string') {
+//    return input.token.trim();
+//   }
+//   throw new createHttpError.BadRequest('Token must be a string');
+// }
 
 export async function resetPasswordService({ token, password }) {
-if (typeof password !== 'string' || password.length < 8) {
-throw new createHttpError.BadRequest('Password is required and must be at least 8 chars');
-  }
+// if (typeof password !== 'string' || password.length < 8) {
+// throw new createHttpError.BadRequest('Password is required and must be at least 8 chars');
+//   }
   let payload;
   try {
-     const normalized = normalizeToken(token);
-    payload = verifyResetToken(normalized);
-  } catch(error){
-    console.log('verifyResetToken failed:', error.name, error.message);
+    //  const normalized = normalizeToken(token);
+    payload = verifyResetToken(token);
+  } catch{
     throw new createHttpError.Unauthorized('Invalid or expired token');
   }
   const user = await User.findOne({ email: payload.email });

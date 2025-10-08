@@ -1,5 +1,6 @@
 import { Contact } from '../models/contact.js';
-import { uploadImageBuffer } from '../utils/cloudinary.js';
+import { uploadToCloudinary } from '../utils/cloudinary.js';
+import fs from 'node:fs/promises';
 
 export async function getContactsListService({
     userId,
@@ -47,24 +48,27 @@ export async function getAllContactsService() {
 export async function getContactByIdService({ contactId, userId }) {
   return Contact.findOne({ _id: contactId, userId }).lean();
 };
-export async function createContactService({ payload, file }) {
-  let photo;
-  if (file?.buffer) {
-    const result = await uploadImageBuffer(file.buffer, `c_${Date.now()}`);
-    photo = result.secure_url;
-  }
-  const doc = await Contact.create({ ...payload, ...(photo ? { photo } : {}) });
+export async function createContactService( payload = {} ) {
+
+  // if (file) {
+  //   const url = await uploadToCloudinary(file.path);
+  //   payload.photo = url;
+  //   await FileSystem.unlink(file.path);
+  // }
+  // payload.userId = userId;
+  const doc = await Contact.create({...payload});
   return doc.toObject();
 }
-export async function updateContactService({ contactId, payload, file }) {
-  let photoUpdate = {};
-  if (file?.buffer) {
-    const result = await uploadImageBuffer(file.buffer, `c_${Date.now()}`);
-    photoUpdate = { photo: result.secure_url };
-  }
+export async function updateContactService(userId, contactId, payload, file ) {
+
+  // if (file) {
+  //   const url = await uploadToCloudinary(file.path);
+  //   payload.photo = url;
+  //   await FileSystem.unlink(file.path);
+  // }
 const updated = await Contact.findOneAndUpdate(
-    { _id: contactId, userId: payload.userId },
-    { $set: { ...payload, ...photoUpdate } },
+    { _id: contactId, userId },
+    payload,
     { new: true,runValidators: true },
   ).lean();
   return updated;

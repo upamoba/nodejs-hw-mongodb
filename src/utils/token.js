@@ -1,6 +1,5 @@
 
 import { getEnvVariable } from './env.js';
-import crypto from 'node:crypto';
 
 const ACCESS_SECRET = getEnvVariable('JWT_ACCESS_SECRET');
 const REFRESH_SECRET = getEnvVariable('JWT_REFRESH_SECRET');
