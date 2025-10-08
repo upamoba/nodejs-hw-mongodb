@@ -1,5 +1,7 @@
-
-import { registerUser, loginUser, refreshSession, logoutUser } from '../services/auth.js';
+import { sendMail } from '../utils/emailTransporter.js';
+import { User } from '../models/user.js';
+import { signResetToken } from '../utils/jwtReset.js';
+import { registerUser, loginUser, refreshSession, logoutUser,sendResetEmailService, resetPasswordService  } from '../services/auth.js';
 const COOKIE_MAX_AGE = 30 * 24 * 60 * 60 * 1000;
 const baseCookie = {
   httpOnly: true,
@@ -35,3 +37,14 @@ export async function logoutController(req, res) {
   res.status(204).end();
 }
 
+export async function sendResetEmailController(req, res) {
+ const { email } = req.body;
+  await sendResetEmailService({ email });
+  res.status(200).json({ status: 200, message: 'Reset email sent successfully!', data: {} });
+}
+
+export async function resetPasswordController(req, res) {
+  const { token, password } = req.body;
+  await resetPasswordService({ token, password });
+  res.status(200).json({ status: 200, message: 'Password has been reset successfully!', data: {} });
+};
