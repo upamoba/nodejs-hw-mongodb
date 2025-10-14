@@ -1,7 +1,8 @@
 import { sendMail } from '../utils/emailTransporter.js';
 import { User } from '../models/user.js';
-// import { signResetToken } from '../utils/jwtReset.js';
-import { registerUser, loginUser, refreshSession, logoutUser,sendResetEmailService, resetPasswordService  } from '../services/auth.js';
+
+import { getOAuthURL,validateCode } from "../utils/googleOAuth.js";
+import { registerUser, loginUser, refreshSession, logoutUser,sendResetEmailService, resetPasswordService,loginOrRegister} from '../services/auth.js';
 const COOKIE_MAX_AGE = 30 * 24 * 60 * 60 * 1000;
 const baseCookie = {
   httpOnly: true,
@@ -48,3 +49,65 @@ export async function resetPasswordController(req, res) {
   await resetPasswordService({ token, password });
   res.status(200).json({ status: 200, message: 'Password has been reset successfully!', data: {} });
 };
+
+
+
+
+
+
+export  function getOAuthURLController(req,res){
+const url = getOAuthURL();
+
+  res.json({
+status:200,
+message: "Successfully get OAuth url",
+data: {
+  oauth_url: url,
+}
+  });
+}
+
+export async function confirmOAuthController(req, res, next) {
+  try {
+
+    const code = req.query.code || req.body?.code;
+    if (!code) {
+      return res.status(400).json({ status: 400, message: "Missing OAuth code" });
+    }
+
+    const { ticket} = await validateCode(code);
+
+
+    const payload = ticket.getPayload?.()  || ticket.payload;
+    const email = payload.email;
+    const name = payload.name || payload.given_name || "Google User";
+
+   const session = await loginOrRegister(email, name);
+console.log('code length:', String(req.query.code || '').length);
+
+    res.cookie("sessionId", String(session._id), {
+      httpOnly: true,
+      sameSite: "lax",
+      path: "/",
+      expires: session.refreshTokenValidUntil,
+      ...(process.env.NODE_ENV === "production" ? { secure: true } : {}),
+
+    });
+
+    res.cookie("refreshToken", session.refreshToken, {
+      httpOnly: true,
+      sameSite: "lax",
+      path: "/",
+      expires: session.refreshTokenValidUntil,
+      ...(process.env.NODE_ENV === "production" ? { secure: true } : {}),
+    });
+
+    return res.json({
+      status: 200,
+      message: "Login via OAuth successfully",
+      data: { accessToken: session.accessToken },
+    });
+  } catch (e) {
+    next(e);
+  }
+}

@@ -1,4 +1,4 @@
-import { v2 as cloudinary } from 'cloudinary';
+import { v2 as cloudinary}  from 'cloudinary';
 
 cloudinary.config({
   cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
@@ -19,5 +19,5 @@ export function uploadToCloudinary(buffer, filename) {
       (err, res) => (err ? reject(err) : resolve(res))
     );
     stream.end(buffer);
-  });
-}
+  })
+};
