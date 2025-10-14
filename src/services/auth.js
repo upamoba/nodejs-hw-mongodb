@@ -118,3 +118,31 @@ export async function resetPasswordService({ token, password }) {
   await Session.deleteMany({ userId: user._id });
 }
 
+
+export async function loginOrRegister(email, name) {
+  let user = await User.findOne({ email });
+
+  if (!user) {
+    const password = await bcrypt.hash(
+      crypto.randomBytes(30).toString('base64'),
+      10
+    );
+    user = await User.create({ name, email, password });
+  }
+
+  await Session.deleteMany({ userId: user._id });
+
+
+  const accessToken = token();
+  const refreshToken = token();
+
+
+  const session = await Session.create({
+    userId: user._id,
+    accessToken,
+    refreshToken,
+    accessTokenValidUntil: new Date(Date.now() + ACCESS_TTL),
+    refreshTokenValidUntil: new Date(Date.now() + REFRESH_TTL),
+  });
+
+  return session; }
