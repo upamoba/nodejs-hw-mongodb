@@ -18,3 +18,4 @@ responses:
     content:
       application/json:
         schema: { $ref: ../../components/schemas/Error.yaml }
+  "404": { $ref: ../../components/responses/NotFound.yaml }

@@ -22,7 +22,7 @@ properties:
     example: true
   photo:
     type: string
-    description: Публічний URL з Cloudinary
+    description: Public URL on Cloudinary
     example: "https://res.cloudinary.com/demo/image/upload/v1720000000/photo.jpg"
   userId:
     type: string

@@ -1,6 +1,7 @@
 tags: [Auth]
 summary: Login user
-operationId: login
+operationId: loginUser
+description: Authenticates user, creates session and returns access token.
 requestBody:
   required: true
   content:
@@ -13,7 +14,8 @@ requestBody:
           password: { type: string }
 responses:
   "200":
-    description: OK
+    description: Successfully logged in
     content:
       application/json:
         schema: { $ref: ../../components/schemas/AuthTokens.yaml }
+       
