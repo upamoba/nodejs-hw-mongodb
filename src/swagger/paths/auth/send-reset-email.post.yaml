@@ -1,6 +1,7 @@
 tags: [Auth]
 summary: Send password reset email
 operationId: sendResetEmail
+description: Sends a reset link (JWT 5 min) to user's email using SMTP (Brevo).
 requestBody:
   required: true
   content:
@@ -11,4 +12,10 @@ requestBody:
         properties:
           email: { type: string, format: email }
 responses:
-  "200": { description: Email sent }
+  "200": { description: Reset password email has been successfully sent. }
+  "404": {
+    $ref: ../../components/responses/NotFound.yaml
+  }
+  "500": {
+    description: SMTP send Error
+  }

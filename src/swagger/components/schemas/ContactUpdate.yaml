@@ -8,4 +8,4 @@ properties:
   photo:
     type: string
     format: binary
-    description: Новий файл фото (multipart/form-data)
+    description: New photo file (multipart/form-data)

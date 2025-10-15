@@ -8,5 +8,5 @@ properties:
   photo:
     type: string
     format: binary
-    description: Файл фото (multipart/form-data)
+    description: Photo file (multipart/form-data)
 required: [ name, email, phoneNumber, contactType ]
