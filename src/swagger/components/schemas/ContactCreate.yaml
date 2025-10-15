@@ -1,0 +1,12 @@
+type: object
+properties:
+  name:         { type: string, example: "Alice" }
+  email:        { type: string, format: email, example: "alice@example.com" }
+  phoneNumber:  { type: string, example: "+380501234567" }
+  contactType:  { type: string, enum: [home, work, personal, other], example: work }
+  isFavourite:  { type: boolean, example: false }
+  photo:
+    type: string
+    format: binary
+    description: Файл фото (multipart/form-data)
+required: [ name, email, phoneNumber, contactType ]

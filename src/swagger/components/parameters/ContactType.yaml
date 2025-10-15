@@ -1,0 +1,6 @@
+name: contactType
+in: query
+schema:
+  type: string
+  enum: [home, work, personal, other]
+description: Filter by contact type

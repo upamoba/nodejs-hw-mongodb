@@ -1,0 +1,25 @@
+tags: [Contacts]
+summary: Update contact (fields and/or photo)
+operationId: updateContact
+description: The update supports multipart/form-data; any fields are optional.
+security: [ { bearerAuth: [] } ]
+parameters:
+  - $ref: ../../../components/parameters/ContactId.yaml
+requestBody:
+  required: false
+  content:
+    multipart/form-data:
+      schema: { $ref: ../../../components/schemas/ContactUpdate.yaml }
+responses:
+  "200":
+    description: Updated
+    content:
+      application/json:
+        schema: { $ref: ../../../components/schemas/Contact.yaml }
+  "400":
+    description: Validation error
+    content:
+      application/json:
+        schema: { $ref: ../../../components/schemas/Error.yaml }
+  "401": { $ref: ../../../components/responses/Unauthorized.yaml }
+  "404": { $ref: ../../../components/responses/NotFound.yaml }

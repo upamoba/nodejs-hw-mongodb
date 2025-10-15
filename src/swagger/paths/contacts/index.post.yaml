@@ -1,0 +1,22 @@
+tags: [Contacts]
+summary: Create a new contact (with optional photo)
+operationId: createContact
+description: Data is transmitted in the format multipart/form-data.
+security: [ { bearerAuth: [] } ]
+requestBody:
+  required: true
+  content:
+    multipart/form-data:
+      schema: { $ref: ../../components/schemas/ContactCreate.yaml }
+responses:
+  "201":
+    description: Created
+    content:
+      application/json:
+        schema: { $ref: ../../components/schemas/Contact.yaml }
+  "400":
+    description: Validation error
+    content:
+      application/json:
+        schema: { $ref: ../../components/schemas/Error.yaml }
+  "401": { $ref: ../../components/responses/Unauthorized.yaml }

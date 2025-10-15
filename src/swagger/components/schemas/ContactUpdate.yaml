@@ -1,0 +1,11 @@
+type: object
+properties:
+  name:         { type: string }
+  email:        { type: string, format: email }
+  phoneNumber:  { type: string }
+  contactType:  { type: string, enum: [home, work, personal, other] }
+  isFavourite:  { type: boolean }
+  photo:
+    type: string
+    format: binary
+    description: Новий файл фото (multipart/form-data)
