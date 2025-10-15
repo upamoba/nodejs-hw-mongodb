@@ -1,0 +1,80 @@
+openapi: 3.1.0
+info:
+  version: 1.0.0
+  title: Node.js Contacts API
+  license:
+    name: Apache 2.0
+    url: http://www.apache.org/licenses/LICENSE-2.0.html
+  description: >
+   API for contact management with authorization, password reset, and photo upload (Cloudinary).
+tags:
+  - name: Auth
+    description: Authorization and password recovery
+  - name: Contacts
+    description: Contact operations
+
+servers:
+  - url: http://localhost:3000
+    description: Local
+  - url: https://<your-render-app>.onrender.com
+    description: Production
+
+paths:
+  /contacts:
+    get:
+      $ref: ../swagger/paths/contacts/index.get.yaml
+    post:
+      $ref: ../swagger/paths/contacts/index.post.yaml
+
+  /contacts/{contactId}:
+    get:
+      $ref: ../swagger/paths/contacts/{contactId}/get.yaml
+    patch:
+      $ref: ../swagger/paths/contacts/{contactId}/patch.yaml
+    delete:
+      $ref: ../swagger/paths/contacts/{contactId}/delete.yaml
+
+
+  /auth/login:
+    post:
+      $ref: ../swagger/paths/auth/login.post.yaml
+  /auth/register:
+    post:
+      $ref: ../swagger/paths/auth/register.post.yaml
+  /auth/refresh:
+    post:
+      $ref: ../swagger/paths/auth/refresh.post.yaml
+  /auth/logout:
+    post:
+      $ref: ../swagger/paths/auth/logout.post.yaml
+  /auth/send-reset-email:
+    post:
+      $ref: ../swagger/paths/auth/send-reset-email.post.yaml
+  /auth/reset-pwd:
+    post:
+      $ref: ../swagger/paths/auth/reset-pwd.post.yaml
+
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+  schemas:
+    Contact:           { $ref: ../swagger/components/schemas/Contact.yaml }
+    ContactCreate:     { $ref: ../swagger/components/schemas/ContactCreate.yaml }
+    ContactUpdate:     { $ref: ../swagger/components/schemas/ContactUpdate.yaml }
+    ContactsList:      { $ref: ../swagger/components/schemas/ContactsList.yaml }
+    Error:             { $ref: ../swagger/components/schemas/Error.yaml }
+    AuthTokens:        { $ref: ../swagger/components/schemas/AuthTokens.yaml }
+  parameters:
+    ContactId:         { $ref: ../swagger/components/parameters/ContactId.yaml }
+    Page:              { $ref: ../swagger/components/parameters/Page.yaml }
+    PerPage:           { $ref: ../swagger/components/parameters/PerPage.yaml }
+    IsFavourite:       { $ref: ../swagger/components/parameters/IsFavourite.yaml }
+    ContactType:       { $ref: ../swagger/components/parameters/ContactType.yaml }
+  responses:
+    NotFound:          { $ref: ../swagger/components/responses/NotFound.yaml }
+    Unauthorized:      { $ref: ../swagger/components/responses/Unauthorized.yaml }
+
+security:
+  - bearerAuth: []

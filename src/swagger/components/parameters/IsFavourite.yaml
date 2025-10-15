@@ -1,0 +1,4 @@
+name: isFavourite
+in: query
+schema: { type: boolean }
+description: filter by favorites

@@ -1,0 +1,6 @@
+type: object
+properties:
+  status:   { type: integer, example: 404 }
+  message:  { type: string, example: "Not found" }
+  data:     { type: object, example: {} }
+required: [ status, message ]

@@ -1,0 +1,4 @@
+name: perPage
+in: query
+schema: { type: integer, minimum: 1, maximum: 100, default: 10 }
+description: the number of elements on the page

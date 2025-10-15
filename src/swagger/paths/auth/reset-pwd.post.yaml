@@ -1,0 +1,20 @@
+tags: [Auth]
+summary: Reset password
+operationId: resetPassword
+requestBody:
+  required: true
+  content:
+    application/json:
+      schema:
+        type: object
+        required: [token, password]
+        properties:
+          token: { type: string }
+          password: { type: string, minLength: 6 }
+responses:
+  "200": { description: Password reset }
+  "401":
+    description: Token is expired or invalid
+    content:
+      application/json:
+        schema: { $ref: ../../components/schemas/Error.yaml }

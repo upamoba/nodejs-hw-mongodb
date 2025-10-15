@@ -1,0 +1,17 @@
+tags: [Contacts]
+summary: Get the current user's contact list
+operationId: listContacts
+description: Returns only contacts belonging to the authorized user.
+security: [ { bearerAuth: [] } ]
+parameters:
+  - $ref: ../../components/parameters/Page.yaml
+  - $ref: ../../components/parameters/PerPage.yaml
+  - $ref: ../../components/parameters/IsFavourite.yaml
+  - $ref: ../../components/parameters/ContactType.yaml
+responses:
+  "200":
+    description: OK
+    content:
+      application/json:
+        schema: { $ref: ../../components/schemas/ContactsList.yaml }
+  "401": { $ref: ../../components/responses/Unauthorized.yaml }
