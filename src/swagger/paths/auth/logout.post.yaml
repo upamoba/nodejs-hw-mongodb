@@ -3,3 +3,6 @@ summary: Logout (cancel session)
 operationId: logout
 responses:
   "204": { description: No Content }
+
+  "500":
+    $ref: ../../components/responses/500.yaml
