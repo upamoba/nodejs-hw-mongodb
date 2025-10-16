@@ -15,10 +15,16 @@ export function setupServer() {
   }),
 );
   app.use(cors({ origin: true, credentials: true }));
-  app.use('/api-docs', apiDocsRouter);
+
   app.use(express.json());
   app.use(cookieParser());
+app.get('/health', (_req, res) => res.status(200).json({ status: 'ok' }));
 
+
+app.use('/api-docs', apiDocsRouter);
+
+
+app.get('/', (_req, res) => res.redirect('/api-docs'));
    app.use('/auth', authRouter);
  app.set('json spaces', 2);
   app.use('/contacts',contactsRouter);
