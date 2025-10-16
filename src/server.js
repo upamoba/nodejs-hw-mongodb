@@ -6,7 +6,7 @@ import{ notFoundHandler } from './middlewares/notFoundHandler.js';
 import { errorHandler } from './middlewares/errorHandler.js';
 import cookieParser from 'cookie-parser';
 import authRouter from './routes/auth.js';
-
+import docsRouter from './routes/api-docs.js';
 export function setupServer() {
   const app = express();
   app.use(pino({
@@ -15,6 +15,7 @@ export function setupServer() {
   }),
 );
   app.use(cors({ origin: true, credentials: true }));
+  app.use('/api-docs', docsRouter);
   app.use(express.json());
   app.use(cookieParser());
 

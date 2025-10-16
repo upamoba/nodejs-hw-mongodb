@@ -1,16 +1,14 @@
 # See https://redocly.com/docs/cli/configuration/ for more information.
 apis:
   sample@v1:
-    root: src/docs/openapi.yaml
+    root: docs/openapi.yaml
 extends:
   - recommended
 rules:
-  no-server-example.com: warn
   no-unused-components: error
-referenceDocs:
+theme:
   htmlTemplate: ./docs/index.html
-  theme:
-   colors:
+  colors:
     primary:
       main: '#32329f'
   generateCodeSamples:
