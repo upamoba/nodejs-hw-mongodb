@@ -1,9 +1,11 @@
 type: object
+required: [items, page, perPage, totalItems, totalPages]
 properties:
-  page:     { type: integer, example: 1 }
-  perPage:  { type: integer, example: 10 }
-  total:    { type: integer, example: 42 }
+  page:     { type: integer,minimum: 1, example: 1 }
+  perPage:  { type: integer,minimum: 1, example: 10 }
+  totalItems:    { type: integer, example: 42 }
+  totalPages: {type: integer, example: 5}
   items:
     type: array
     items: { $ref: ./Contact.yaml }
-required: [ page, perPage, total, items ]
+

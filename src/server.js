@@ -7,6 +7,7 @@ import { errorHandler } from './middlewares/errorHandler.js';
 import cookieParser from 'cookie-parser';
 import authRouter from './routes/auth.js';
 import apiDocsRouter from './routes/api-docs.js';
+
 export function setupServer() {
   const app = express();
   app.use(pino({

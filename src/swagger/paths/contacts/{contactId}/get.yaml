@@ -7,9 +7,19 @@ parameters:
   - $ref: ../../../components/parameters/ContactId.yaml
 responses:
   "200":
-    description: OK
+    description: Знайдений контакт
     content:
       application/json:
-        schema: { $ref: ../../../components/schemas/Contact.yaml }
+        schema:
+          allOf:
+            - $ref: ../../../components/schemas/CommonResponse.yaml
+            - type: object
+              properties:
+                data:
+                  type: object
+                  properties:
+                    contact:
+                      $ref: ../../../components/schemas/Contact.yaml
+                  required: [contact]
   "401": { $ref: ../../../components/responses/Unauthorized.yaml }
   "404": { $ref: ../../../components/responses/NotFound.yaml }
