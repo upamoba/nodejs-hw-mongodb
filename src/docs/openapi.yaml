@@ -14,10 +14,11 @@ tags:
     description: Contact operations
 
 servers:
+  - url: https://nodejs-hw-mongodb-7-59qt.onrender.com
+    description: Production
   - url: http://localhost:3000
     description: Local
-  - url: https://<your-render-app>.onrender.com
-    description: Production
+
 
 paths:
   /contacts:

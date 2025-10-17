@@ -1,4 +1,5 @@
 type: object
+required: [ _id, name, email, phoneNumber, contactType, isFavourite, userId ]
 properties:
   _id:
     type: string
@@ -33,4 +34,3 @@ properties:
   updatedAt:
     type: string
     format: date-time
-required: [ _id, name, email, phoneNumber, contactType, isFavourite, userId ]

@@ -2,16 +2,94 @@ tags: [Contacts]
 summary: Get the current user's contact list
 operationId: listContacts
 description: Returns only contacts belonging to the authorized user.
-security: [ { bearerAuth: [] } ]
+security:
+  - bearerAuth: []
+# parameters:
+#   - $ref: ../../components/parameters/Page.yaml
+#   - $ref: ../../components/parameters/PerPage.yaml
+#   - $ref: ../../components/parameters/IsFavourite.yaml
+#   - $ref: ../../components/parameters/ContactType.yaml
+# responses:
+#   "200":
+#     description: OK
+#     content:
+#       application/json:
+#         schema: { $ref: ../../components/schemas/ContactsList.yaml }
+#   "401": { $ref: ../../components/responses/Unauthorized.yaml }
 parameters:
-  - $ref: ../../components/parameters/Page.yaml
-  - $ref: ../../components/parameters/PerPage.yaml
-  - $ref: ../../components/parameters/IsFavourite.yaml
-  - $ref: ../../components/parameters/ContactType.yaml
+  - in: query
+    name: page
+    schema: { type: integer, minimum: 1, default: 1 }
+    description: Page number (pagination)
+  - in: query
+    name: perPage
+    schema: { type: integer, minimum: 1, maximum: 100, default: 10 }
+    description: Number of elements per page
+  - in: query
+    name: sortBy
+    schema:
+      type: string
+      enum: [name, email, phoneNumber, contactType, isFavourite, createdAt, updatedAt]
+    description: Sort field
+  - in: query
+    name: sortOrder
+    schema: { type: string, enum: [asc, desc], default: asc }
+    description: Sort direction
+  - in: query
+    name: contactType
+    schema: { type: string, enum: [home, work, other] }
+    description: Filter by contact type
+  - in: query
+    name: isFavourite
+    schema: { type: boolean }
+    description: Filter by favorite contacts
+  - in: query
+    name: search
+    schema: { type: string }
+    description: Search by name/email/phone
 responses:
   "200":
-    description: OK
+    description: Contact list with page metadata
     content:
       application/json:
-        schema: { $ref: ../../components/schemas/ContactsList.yaml }
-  "401": { $ref: ../../components/responses/Unauthorized.yaml }
+        schema:
+          allOf:
+            - $ref: ../../components/schemas/CommonResponse.yaml
+            - type: object
+              properties:
+                data:
+                  type: object
+                  properties:
+                    result:
+                      $ref: ../../components/schemas/ContactsList.yaml
+                  required: [result]
+        examples:
+          ok:
+            value:
+              status: 200
+              message: OK
+              data:
+                result:
+                  items:
+                    - _id: 68e6eaeb61b8a6f48903a256
+                      name: John Doe
+                      phoneNumber: "+380501112233"
+                      email: john.doe@example.com
+                      contactType: work
+                      isFavourite: true
+                      photo: https://res.cloudinary.com/demo/image/upload/v1720000000/photo.jpg
+                      userId: 66f0c1e8d8f2a0b7c547f123
+                      createdAt: "2025-10-09T00:00:00.000Z"
+                      updatedAt: "2025-10-09T00:00:00.000Z"
+                  page: 1
+                  perPage: 10
+                  totalItems: 1
+                  totalPages: 1
+  "401":
+    description: Unauthorized / expired token
+    content:
+      application/json:
+        schema: { $ref: ../../components/schemas/Error.yaml }
+        examples:
+          unauthorized:
+            value: { status: 401, message: "Unauthorized" }
