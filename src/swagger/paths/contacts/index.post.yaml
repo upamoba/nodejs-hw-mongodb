@@ -11,7 +11,7 @@ requestBody:
     multipart/form-data:
       schema:
         type: object
-        required: [name, phoneNumber, email, contactType, isFavourite]
+        required: [name, phoneNumber, email]
         properties:
           name:        { type: string }
           phoneNumber: { type: string }
