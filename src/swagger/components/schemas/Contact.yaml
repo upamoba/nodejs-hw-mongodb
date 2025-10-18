@@ -1,11 +1,24 @@
 type: object
-required: [ _id, name, email, phoneNumber, contactType, isFavourite, userId ]
+required:
+  - _id,
+  - name,
+  - email,
+  - phoneNumber,
+  - contactType,
+  - isFavourite,
+  - userId,
+  - photo,
+  - createdAt
+  - updatedAt
+
 properties:
   _id:
     type: string
+    description: Contact id
     example: "68e6eaeb61b8a6f48903a256"
   name:
     type: string
+    description: Contact name
     example: "John Doe"
   email:
     type: string
@@ -13,6 +26,7 @@ properties:
     example: "john.doe@example.com"
   phoneNumber:
     type: string
+    description: Contact number
     example: "+380501112233"
   contactType:
     type: string
@@ -23,7 +37,7 @@ properties:
     example: true
   photo:
     type: string
-    description: Public URL on Cloudinary
+    description: Contact photo
     example: "https://res.cloudinary.com/demo/image/upload/v1720000000/photo.jpg"
   userId:
     type: string
@@ -31,6 +45,8 @@ properties:
   createdAt:
     type: string
     format: date-time
+    example: 2025-10-08T18:21:10.157+00:00
   updatedAt:
     type: string
     format: date-time
+    example: 2025-10-08T18:21:10.157+00:00

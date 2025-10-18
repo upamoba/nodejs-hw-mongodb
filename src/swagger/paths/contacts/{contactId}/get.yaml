@@ -2,12 +2,13 @@ tags: [Contacts]
 summary: Get contact by ID
 operationId: getContactById
 description: Returns the user's contact by ObjectId.
-security: [ { bearerAuth: [] } ]
+security:
+  - bearerAuth: []
 parameters:
   - $ref: ../../../components/parameters/ContactId.yaml
 responses:
   "200":
-    description: Знайдений контакт
+    description: Contact found
     content:
       application/json:
         schema:

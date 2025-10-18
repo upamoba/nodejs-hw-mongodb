@@ -4,18 +4,6 @@ operationId: listContacts
 description: Returns only contacts belonging to the authorized user.
 security:
   - bearerAuth: []
-# parameters:
-#   - $ref: ../../components/parameters/Page.yaml
-#   - $ref: ../../components/parameters/PerPage.yaml
-#   - $ref: ../../components/parameters/IsFavourite.yaml
-#   - $ref: ../../components/parameters/ContactType.yaml
-# responses:
-#   "200":
-#     description: OK
-#     content:
-#       application/json:
-#         schema: { $ref: ../../components/schemas/ContactsList.yaml }
-#   "401": { $ref: ../../components/responses/Unauthorized.yaml }
 parameters:
   - in: query
     name: page
@@ -43,13 +31,9 @@ parameters:
     name: isFavourite
     schema: { type: boolean }
     description: Filter by favorite contacts
-  - in: query
-    name: search
-    schema: { type: string }
-    description: Search by name/email/phone
 responses:
   "200":
-    description: Contact list with page metadata
+    description: Contact list in pagination
     content:
       application/json:
         schema:
@@ -57,39 +41,35 @@ responses:
             - $ref: ../../components/schemas/CommonResponse.yaml
             - type: object
               properties:
-                data:
-                  type: object
-                  properties:
-                    result:
-                      $ref: ../../components/schemas/ContactsList.yaml
-                  required: [result]
+                message: { example: "Contacts fetched successfully" }
+                data: { $ref: ../../components/schemas/PaginatedContacts.yaml }
         examples:
           ok:
             value:
               status: 200
-              message: OK
+              message: "Contacts fetched successfully"
               data:
-                result:
-                  items:
-                    - _id: 68e6eaeb61b8a6f48903a256
-                      name: John Doe
-                      phoneNumber: "+380501112233"
-                      email: john.doe@example.com
-                      contactType: work
-                      isFavourite: true
-                      photo: https://res.cloudinary.com/demo/image/upload/v1720000000/photo.jpg
-                      userId: 66f0c1e8d8f2a0b7c547f123
-                      createdAt: "2025-10-09T00:00:00.000Z"
-                      updatedAt: "2025-10-09T00:00:00.000Z"
+                items:
+                  - _id: "68e6eaeb61b8a6f48903a256"
+                    name: "John Doe"
+                    phoneNumber: "+380501112233"
+                    email: "john.doe@example.com"
+                    contactType: "work"
+                    isFavourite: false
+                    photo: null
+                    userId: "66c0c1c7e9c2f6b2d1a9f123"
+                    createdAt: "2025-10-08T14:39:20.123Z"
+                    updatedAt: "2025-10-08T14:39:20.123Z"
+                meta:
                   page: 1
                   perPage: 10
-                  totalItems: 1
-                  totalPages: 1
+                  totalItems: 37
+                  totalPages: 4
+                  hasNextPage: true
+                  hasPrevPage: false
+                  nextPage: 2
+                  prevPage: null
   "401":
-    description: Unauthorized / expired token
-    content:
-      application/json:
-        schema: { $ref: ../../components/schemas/Error.yaml }
-        examples:
-          unauthorized:
-            value: { status: 401, message: "Unauthorized" }
+    $ref: ../../components/responses/401.yaml
+  "500":
+    $ref: ../../components/responses/500.yaml

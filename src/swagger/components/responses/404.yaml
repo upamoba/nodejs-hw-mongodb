@@ -1,4 +1,4 @@
-description: Internal Server Error
+description: Not found
 content:
   application/json:
     schema:
@@ -6,6 +6,6 @@ content:
         - $ref: ../schemas/Envelope.yaml
         - type: object
           properties:
-            status:  { example: 500 }
-            message: { example: "Internal Server Error" }
+            status:  { example: 404 }
+            message: { example: "Not found" }
             data:    { type: object, example: {} }

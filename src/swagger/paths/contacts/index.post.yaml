@@ -1,22 +1,59 @@
 tags: [Contacts]
-summary: Create a new contact (with optional photo)
+summary: Create a new contact
 operationId: createContact
 description: Data is transmitted in the format multipart/form-data.
-security: [ { bearerAuth: [] } ]
+security:
+  - bearerAuth: []
 requestBody:
   required: true
   content:
-    multipart/form-data:
-      schema: { $ref: ../../components/schemas/ContactCreate.yaml }
+  multipart/form-data:
+      schema:
+       type: object
+       required: [name, phoneNumber, email, contactType, isFavourite]
+        properties:
+          name:        { type: string }
+          phoneNumber: { type: string }
+          email:       { type: string, format: email }
+          contactType: { type: string, enum: [work, home, personal] }
+          isFavourite: { type: boolean }
+          photo:       { type: string, format: binary }
+
 responses:
   "201":
     description: Created
     content:
       application/json:
-        schema: { $ref: ../../components/schemas/Contact.yaml }
+    schema:
+          allOf:
+            - $ref: ../../components/schemas/Envelope.yaml
+            - type: object
+              properties:
+                status:  { example: 201 }
+                message: { example: "Contact created successfully" }
+                data:    { $ref: ../../components/schemas/Contact.yaml }
+        examples:
+          created:
+            value:
+              status: 201
+              message: "Contact created successfully"
+              data:
+                _id: "68e6eaeb61b8a6f48903a256"
+                name: "John Doe"
+                phoneNumber: "+380501112233"
+                email: "john.doe@example.com"
+                contactType: "work"
+                isFavourite: false
+                photo: "https://res.cloudinary.com/.../photo.jpg"
+                userId: "66c0c1c7e9c2f6b2d1a9f123"
+                createdAt: "2025-10-08T14:39:20.123Z"
+                updatedAt: "2025-10-08T14:39:20.123Z"
   "400":
     description: Validation error
     content:
       application/json:
-        schema: { $ref: ../../components/schemas/Error.yaml }
-  "401": { $ref: ../../components/responses/Unauthorized.yaml }
+        schema: { $ref: ../../components/schemas/Envelope.yaml }
+  "401":
+    $ref: ../../components/responses/401.yaml
+  "500":
+    $ref: ../../components/responses/500.yaml
