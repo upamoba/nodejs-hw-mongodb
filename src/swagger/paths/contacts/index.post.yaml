@@ -55,12 +55,13 @@ responses:
                 createdAt: "2025-10-08T14:39:20.123Z"
                 updatedAt: "2025-10-08T14:39:20.123Z"
 
+
   "400":
-    description: Validation error
+    description: Bad Request
     content:
       application/json:
-        schema: { $ref: ../../components/schemas/Envelope.yaml }
-
+        schema:
+          $ref: ../../components/schemas/BadRequestEnvelope.yaml
   "401":
     $ref: ../../components/responses/401.yaml
 

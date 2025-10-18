@@ -3,18 +3,14 @@ content:
   application/json:
     schema:
       type: object
-      required:
-        - status
-        - message
-        - data
+      required: [status, message, data]
       properties:
-        status:
-          type: integer
-          example: 400
-        message:
-          type: string
-          example: Bad Request
-        data:
-          type: array
-          items:
-            type: string
+        status:  { type: integer, example: 400 }
+        message: { type: string,  example: Bad Request }
+        data:    { nullable: true, example: null }
+    examples:
+      bad:
+        value:
+          status: 400
+          message: Bad Request
+          data: null
