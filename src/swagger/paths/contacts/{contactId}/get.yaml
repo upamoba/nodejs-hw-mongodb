@@ -16,11 +16,11 @@ responses:
       application/json:
         schema:
           allOf:
-            - $ref: ../../components/schemas/Envelope.yaml
+            - $ref: ../../../components/schemas/Envelope.yaml
             - type: object
               properties:
                 message: { example: "Contact fetched successfully" }
-                data:    { $ref: ../../components/schemas/Contact.yaml }
+                data:    { $ref: ../../../components/schemas/Contact.yaml }
         examples:
           ok:
             value:
@@ -38,14 +38,14 @@ responses:
                 createdAt: "2025-10-08T14:39:20.123Z"
                 updatedAt: "2025-10-08T14:39:20.123Z"
   "401":
-    $ref: ../../components/responses/401.yaml
+    $ref: ../../../components/responses/401.yaml
   "404":
     description: Not found
     content:
       application/json:
         schema:
           allOf:
-            - $ref: ../../components/schemas/Envelope.yaml
+            - $ref: ../../../components/schemas/Envelope.yaml
             - type: object
               properties:
                 message: { example: "Contact not found" }
@@ -58,4 +58,4 @@ responses:
               message: "Contact not found"
               data: null
   "500":
-    $ref: ../../components/responses/500.yaml
+    $ref: ../../../components/responses/500.yaml

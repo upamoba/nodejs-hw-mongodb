@@ -30,11 +30,11 @@ responses:
       application/json:
         schema:
           allOf:
-            - $ref: ../../components/schemas/Envelope.yaml
+            - $ref: ../../../components/schemas/Envelope.yaml
             - type: object
               properties:
                 message: { example: "Contact updated successfully" }
-                data:    { $ref: ../../components/schemas/Contact.yaml }
+                data:    { $ref: ../../../components/schemas/Contact.yaml }
         examples:
           ok:
             value:
@@ -57,7 +57,7 @@ responses:
       application/json:
         schema:
           allOf:
-            - $ref: ../../components/schemas/Envelope.yaml
+            - $ref: ../../../components/schemas/Envelope.yaml
             - type: object
               properties:
                 message: { example: "Validation error" }
@@ -71,14 +71,14 @@ responses:
               message: "Validation error"
               data: ["email must be a valid email"]
   "401":
-    $ref: ../../components/responses/401.yaml
+    $ref: ../../../components/responses/401.yaml
   "404":
     description: Not found
     content:
       application/json:
         schema:
           allOf:
-            - $ref: ../../components/schemas/Envelope.yaml
+            - $ref: ../../../components/schemas/Envelope.yaml
             - type: object
               properties:
                 message: { example: "Contact not found" }
@@ -91,4 +91,4 @@ responses:
               message: "Contact not found"
               data: null
   "500":
-    $ref: ../../components/responses/500.yaml
+    $ref: ../../../components/responses/500.yaml

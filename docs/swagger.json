@@ -211,9 +211,7 @@
                 "required": [
                   "name",
                   "phoneNumber",
-                  "email",
-                  "contactType",
-                  "isFavourite"
+                  "email"
                 ],
                 "properties": {
                   "name": {
@@ -331,45 +329,99 @@
         ],
         "parameters": [
           {
-            "$ref": "#/components/parameters/ContactId"
+            "in": "path",
+            "name": "contactId",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
           }
         ],
         "responses": {
           "200": {
-            "description": "Contact found",
+            "description": "OK",
             "content": {
               "application/json": {
                 "schema": {
                   "allOf": [
                     {
-                      "$ref": "#/components/schemas/CommonResponse"
+                      "$ref": "#/components/schemas/Envelope"
                     },
                     {
                       "type": "object",
                       "properties": {
+                        "message": {
+                          "example": "Contact fetched successfully"
+                        },
                         "data": {
-                          "type": "object",
-                          "properties": {
-                            "contact": {
-                              "$ref": "#/components/schemas/Contact"
-                            }
-                          },
-                          "required": [
-                            "contact"
-                          ]
+                          "$ref": "#/components/schemas/Contact"
                         }
                       }
                     }
                   ]
+                },
+                "examples": {
+                  "ok": {
+                    "value": {
+                      "status": 200,
+                      "message": "Contact fetched successfully",
+                      "data": {
+                        "_id": "68e6eaeb61b8a6f48903a256",
+                        "name": "John Doe",
+                        "phoneNumber": "+380501112233",
+                        "email": "john.doe@example.com",
+                        "contactType": "work",
+                        "isFavourite": false,
+                        "photo": "https://res.cloudinary.com/demo/image/upload/v1/photo.jpg",
+                        "userId": "66c0c1c7e9c2f6b2d1a9f123",
+                        "createdAt": "2025-10-08T14:39:20.123Z",
+                        "updatedAt": "2025-10-08T14:39:20.123Z"
+                      }
+                    }
+                  }
                 }
               }
             }
           },
           "401": {
-            "$ref": "#/components/responses/Unauthorized"
+            "$ref": "#/components/responses/401"
           },
           "404": {
-            "$ref": "#/components/responses/NotFound"
+            "description": "Not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "allOf": [
+                    {
+                      "$ref": "#/components/schemas/Envelope"
+                    },
+                    {
+                      "type": "object",
+                      "properties": {
+                        "message": {
+                          "example": "Contact not found"
+                        },
+                        "data": {
+                          "type": "null"
+                        }
+                      }
+                    }
+                  ]
+                },
+                "examples": {
+                  "notFound": {
+                    "value": {
+                      "status": 404,
+                      "message": "Contact not found",
+                      "data": null
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "$ref": "#/components/responses/500"
           }
         }
       },
@@ -379,7 +431,7 @@
         ],
         "summary": "Update contact (fields and/or photo)",
         "operationId": "updateContact",
-        "description": "The update supports multipart/form-data; any fields are optional.",
+        "description": "Updates contact fields (multipart/form-data supported for photo).",
         "security": [
           {
             "bearerAuth": []
@@ -387,26 +439,93 @@
         ],
         "parameters": [
           {
-            "$ref": "#/components/parameters/ContactId"
+            "in": "path",
+            "name": "contactId",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
           }
         ],
         "requestBody": {
-          "required": false,
+          "required": true,
           "content": {
             "multipart/form-data": {
               "schema": {
-                "$ref": "#/components/schemas/ContactUpdate"
+                "type": "object",
+                "properties": {
+                  "name": {
+                    "type": "string"
+                  },
+                  "phoneNumber": {
+                    "type": "string"
+                  },
+                  "email": {
+                    "type": "string",
+                    "format": "email"
+                  },
+                  "contactType": {
+                    "type": "string",
+                    "enum": [
+                      "work",
+                      "home",
+                      "personal"
+                    ]
+                  },
+                  "isFavourite": {
+                    "type": "boolean"
+                  },
+                  "photo": {
+                    "type": "string",
+                    "format": "binary"
+                  }
+                }
               }
             }
           }
         },
         "responses": {
           "200": {
-            "description": "Updated",
+            "description": "OK",
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/Contact"
+                  "allOf": [
+                    {
+                      "$ref": "#/components/schemas/Envelope"
+                    },
+                    {
+                      "type": "object",
+                      "properties": {
+                        "message": {
+                          "example": "Contact updated successfully"
+                        },
+                        "data": {
+                          "$ref": "#/components/schemas/Contact"
+                        }
+                      }
+                    }
+                  ]
+                },
+                "examples": {
+                  "ok": {
+                    "value": {
+                      "status": 200,
+                      "message": "Contact updated successfully",
+                      "data": {
+                        "_id": "68e6eaeb61b8a6f48903a256",
+                        "name": "Jane Doe",
+                        "phoneNumber": "+380501112233",
+                        "email": "jane.doe@example.com",
+                        "contactType": "home",
+                        "isFavourite": true,
+                        "photo": "https://res.cloudinary.com/demo/image/upload/v1/photo-updated.jpg",
+                        "userId": "66c0c1c7e9c2f6b2d1a9f123",
+                        "createdAt": "2025-10-08T14:39:20.123Z",
+                        "updatedAt": "2025-10-18T11:55:20.123Z"
+                      }
+                    }
+                  }
                 }
               }
             }
@@ -416,16 +535,79 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/Error"
+                  "allOf": [
+                    {
+                      "$ref": "#/components/schemas/Envelope"
+                    },
+                    {
+                      "type": "object",
+                      "properties": {
+                        "message": {
+                          "example": "Validation error"
+                        },
+                        "data": {
+                          "type": "array",
+                          "items": {
+                            "type": "string"
+                          }
+                        }
+                      }
+                    }
+                  ]
+                },
+                "examples": {
+                  "bad": {
+                    "value": {
+                      "status": 400,
+                      "message": "Validation error",
+                      "data": [
+                        "email must be a valid email"
+                      ]
+                    }
+                  }
                 }
               }
             }
           },
           "401": {
-            "$ref": "#/components/responses/Unauthorized"
+            "$ref": "#/components/responses/401"
           },
           "404": {
-            "$ref": "#/components/responses/NotFound"
+            "description": "Not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "allOf": [
+                    {
+                      "$ref": "#/components/schemas/Envelope"
+                    },
+                    {
+                      "type": "object",
+                      "properties": {
+                        "message": {
+                          "example": "Contact not found"
+                        },
+                        "data": {
+                          "type": "null"
+                        }
+                      }
+                    }
+                  ]
+                },
+                "examples": {
+                  "notFound": {
+                    "value": {
+                      "status": 404,
+                      "message": "Contact not found",
+                      "data": null
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "$ref": "#/components/responses/500"
           }
         }
       },
