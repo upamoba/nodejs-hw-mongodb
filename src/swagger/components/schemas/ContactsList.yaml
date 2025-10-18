@@ -1,10 +1,14 @@
 type: object
-required: [items, page, perPage, totalItems, totalPages]
+required: [items, page, perPage, totalItems, totalPages, hasNextPage, hasPrevPage]
 properties:
-  page:     { type: integer,minimum: 1, example: 1 }
-  perPage:  { type: integer,minimum: 1, example: 10 }
-  totalItems:    { type: integer, example: 42 }
+  page:     { type: integer, example: 1 }
+  perPage:  { type: integer, example: 10 }
+  totalItems: { type: integer, example: 42 }
   totalPages: {type: integer, example: 5}
+  hasNextPage: { type: boolean, example: true }
+  hasPrevPage: { type: boolean, example: false }
+  nextPage:    { type: [integer,'null'], example: 2 }
+  prevPage:    { type: [integer,'null'], example: null }
   items:
     type: array
     items: { $ref: ./Contact.yaml }

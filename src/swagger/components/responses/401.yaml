@@ -1,17 +1,11 @@
-description: Unauthorized Error
+description: Unauthorized
 content:
   application/json:
     schema:
-      type: object
-      required:
-        - status
-        - message
-      properties:
-        status:
-          type: integer
-          example: 401
-        message:
-          type: string
-          example: Unauthorized Error
-
-
+      allOf:
+        - $ref: ../schemas/Envelope.yaml
+        - type: object
+          properties:
+            status:  { example: 401 }
+            message: { example: "Unauthorized" }
+            data:    { type: object, example: {} }
