@@ -1,13 +1,13 @@
 type: object
 required:
-  - _id,
-  - name,
-  - email,
-  - phoneNumber,
-  - contactType,
-  - isFavourite,
-  - userId,
-  - photo,
+  - _id
+  - name
+  - email
+  - phoneNumber
+  - contactType
+  - isFavourite
+  - userId
+  - photo
   - createdAt
   - updatedAt
 
