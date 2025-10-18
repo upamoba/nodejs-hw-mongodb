@@ -64,7 +64,7 @@ components:
     Contact:           { $ref: ../swagger/components/schemas/Contact.yaml }
     ContactCreate:     { $ref: ../swagger/components/schemas/ContactCreate.yaml }
     ContactUpdate:     { $ref: ../swagger/components/schemas/ContactUpdate.yaml }
-    ContactsList:      { $ref: ../swagger/components/schemas/ContactsList.yaml }
+    ContactsList:      { $ref: ../swagger/components/schemas/PaginationMeta.yaml }
     Error:             { $ref: ../swagger/components/schemas/Error.yaml }
     AuthTokens:        { $ref: ../swagger/components/schemas/AuthTokens.yaml }
   parameters:

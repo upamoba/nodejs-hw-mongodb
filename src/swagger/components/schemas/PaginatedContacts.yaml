@@ -1,0 +1,8 @@
+type: object
+required: [items, meta]
+properties:
+  items:
+    type: array
+    items: { $ref: ../schemas/Contact.yaml }
+  meta:
+    $ref: ../schemas/PaginationMeta.yaml

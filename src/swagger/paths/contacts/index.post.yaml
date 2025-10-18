@@ -4,13 +4,14 @@ operationId: createContact
 description: Data is transmitted in the format multipart/form-data.
 security:
   - bearerAuth: []
+
 requestBody:
   required: true
   content:
-  multipart/form-data:
+    multipart/form-data:
       schema:
-       type: object
-       required: [name, phoneNumber, email, contactType, isFavourite]
+        type: object
+        required: [name, phoneNumber, email, contactType, isFavourite]
         properties:
           name:        { type: string }
           phoneNumber: { type: string }
@@ -24,19 +25,24 @@ responses:
     description: Created
     content:
       application/json:
-    schema:
+        schema:
           allOf:
             - $ref: ../../components/schemas/Envelope.yaml
             - type: object
               properties:
-                status:  { example: 201 }
-                message: { example: "Contact created successfully" }
-                data:    { $ref: ../../components/schemas/Contact.yaml }
+                status:
+                  type: integer
+                  example: 201
+                message:
+                  type: string
+                  example: Contact created successfully
+                data:
+                  $ref: ../../components/schemas/Contact.yaml
         examples:
           created:
             value:
               status: 201
-              message: "Contact created successfully"
+              message: Contact created successfully
               data:
                 _id: "68e6eaeb61b8a6f48903a256"
                 name: "John Doe"
@@ -44,16 +50,19 @@ responses:
                 email: "john.doe@example.com"
                 contactType: "work"
                 isFavourite: false
-                photo: "https://res.cloudinary.com/.../photo.jpg"
+                photo: "https://res.cloudinary.com/demo/image/upload/photo.jpg"
                 userId: "66c0c1c7e9c2f6b2d1a9f123"
                 createdAt: "2025-10-08T14:39:20.123Z"
                 updatedAt: "2025-10-08T14:39:20.123Z"
+
   "400":
     description: Validation error
     content:
       application/json:
         schema: { $ref: ../../components/schemas/Envelope.yaml }
+
   "401":
     $ref: ../../components/responses/401.yaml
+
   "500":
     $ref: ../../components/responses/500.yaml

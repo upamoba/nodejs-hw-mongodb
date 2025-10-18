@@ -11,12 +11,12 @@
   },
   "servers": [
     {
-      "url": "http://localhost:3000",
-      "description": "Local"
+      "url": "https://nodejs-hw-mongodb-7-59qt.onrender.com",
+      "description": "Production"
     },
     {
-      "url": "https://<your-render-app>.onrender.com",
-      "description": "Production"
+      "url": "http://localhost:3000",
+      "description": "Local"
     }
   ],
   "security": [
@@ -50,31 +50,143 @@
         ],
         "parameters": [
           {
-            "$ref": "#/components/parameters/Page"
+            "in": "query",
+            "name": "page",
+            "schema": {
+              "type": "integer",
+              "minimum": 1,
+              "default": 1
+            },
+            "description": "Page number (pagination)"
           },
           {
-            "$ref": "#/components/parameters/PerPage"
+            "in": "query",
+            "name": "perPage",
+            "schema": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 100,
+              "default": 10
+            },
+            "description": "Number of elements per page"
           },
           {
-            "$ref": "#/components/parameters/IsFavourite"
+            "in": "query",
+            "name": "sortBy",
+            "schema": {
+              "type": "string",
+              "enum": [
+                "name",
+                "email",
+                "phoneNumber",
+                "contactType",
+                "isFavourite",
+                "createdAt",
+                "updatedAt"
+              ]
+            },
+            "description": "Sort field"
           },
           {
-            "$ref": "#/components/parameters/ContactType"
+            "in": "query",
+            "name": "sortOrder",
+            "schema": {
+              "type": "string",
+              "enum": [
+                "asc",
+                "desc"
+              ],
+              "default": "asc"
+            },
+            "description": "Sort direction"
+          },
+          {
+            "in": "query",
+            "name": "contactType",
+            "schema": {
+              "type": "string",
+              "enum": [
+                "home",
+                "work",
+                "other"
+              ]
+            },
+            "description": "Filter by contact type"
+          },
+          {
+            "in": "query",
+            "name": "isFavourite",
+            "schema": {
+              "type": "boolean"
+            },
+            "description": "Filter by favorite contacts"
           }
         ],
         "responses": {
           "200": {
-            "description": "OK",
+            "description": "Contact list in pagination",
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/ContactsList"
+                  "allOf": [
+                    {
+                      "$ref": "#/components/schemas/CommonResponse"
+                    },
+                    {
+                      "type": "object",
+                      "properties": {
+                        "message": {
+                          "example": "Contacts fetched successfully"
+                        },
+                        "data": {
+                          "$ref": "#/components/schemas/PaginatedContacts"
+                        }
+                      }
+                    }
+                  ]
+                },
+                "examples": {
+                  "ok": {
+                    "value": {
+                      "status": 200,
+                      "message": "Contacts fetched successfully",
+                      "data": {
+                        "items": [
+                          {
+                            "_id": "68e6eaeb61b8a6f48903a256",
+                            "name": "John Doe",
+                            "phoneNumber": "+380501112233",
+                            "email": "john.doe@example.com",
+                            "contactType": "work",
+                            "isFavourite": false,
+                            "photo": null,
+                            "userId": "66c0c1c7e9c2f6b2d1a9f123",
+                            "createdAt": "2025-10-08T14:39:20.123Z",
+                            "updatedAt": "2025-10-08T14:39:20.123Z"
+                          }
+                        ],
+                        "meta": {
+                          "page": 1,
+                          "perPage": 10,
+                          "totalItems": 37,
+                          "totalPages": 4,
+                          "hasNextPage": true,
+                          "hasPrevPage": false,
+                          "nextPage": 2,
+                          "prevPage": null
+                        }
+                      }
+                    }
+                  }
                 }
               }
             }
           },
           "401": {
-            "$ref": "#/components/responses/Unauthorized"
+            "$ref": "#/components/responses/401"
+          },
+          "500": {
+            "$ref": "#/components/responses/500"
           }
         }
       },
@@ -82,7 +194,7 @@
         "tags": [
           "Contacts"
         ],
-        "summary": "Create a new contact (with optional photo)",
+        "summary": "Create a new contact",
         "operationId": "createContact",
         "description": "Data is transmitted in the format multipart/form-data.",
         "security": [
@@ -95,7 +207,41 @@
           "content": {
             "multipart/form-data": {
               "schema": {
-                "$ref": "#/components/schemas/ContactCreate"
+                "type": "object",
+                "required": [
+                  "name",
+                  "phoneNumber",
+                  "email",
+                  "contactType",
+                  "isFavourite"
+                ],
+                "properties": {
+                  "name": {
+                    "type": "string"
+                  },
+                  "phoneNumber": {
+                    "type": "string"
+                  },
+                  "email": {
+                    "type": "string",
+                    "format": "email"
+                  },
+                  "contactType": {
+                    "type": "string",
+                    "enum": [
+                      "work",
+                      "home",
+                      "personal"
+                    ]
+                  },
+                  "isFavourite": {
+                    "type": "boolean"
+                  },
+                  "photo": {
+                    "type": "string",
+                    "format": "binary"
+                  }
+                }
               }
             }
           }
@@ -106,7 +252,47 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/Contact"
+                  "allOf": [
+                    {
+                      "$ref": "#/components/schemas/Envelope"
+                    },
+                    {
+                      "type": "object",
+                      "properties": {
+                        "status": {
+                          "type": "integer",
+                          "example": 201
+                        },
+                        "message": {
+                          "type": "string",
+                          "example": "Contact created successfully"
+                        },
+                        "data": {
+                          "$ref": "#/components/schemas/Contact"
+                        }
+                      }
+                    }
+                  ]
+                },
+                "examples": {
+                  "created": {
+                    "value": {
+                      "status": 201,
+                      "message": "Contact created successfully",
+                      "data": {
+                        "_id": "68e6eaeb61b8a6f48903a256",
+                        "name": "John Doe",
+                        "phoneNumber": "+380501112233",
+                        "email": "john.doe@example.com",
+                        "contactType": "work",
+                        "isFavourite": false,
+                        "photo": "https://res.cloudinary.com/demo/image/upload/photo.jpg",
+                        "userId": "66c0c1c7e9c2f6b2d1a9f123",
+                        "createdAt": "2025-10-08T14:39:20.123Z",
+                        "updatedAt": "2025-10-08T14:39:20.123Z"
+                      }
+                    }
+                  }
                 }
               }
             }
@@ -116,13 +302,16 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/Error"
+                  "$ref": "#/components/schemas/Envelope"
                 }
               }
             }
           },
           "401": {
-            "$ref": "#/components/responses/Unauthorized"
+            "$ref": "#/components/responses/401"
+          },
+          "500": {
+            "$ref": "#/components/responses/500"
           }
         }
       }
@@ -147,11 +336,31 @@
         ],
         "responses": {
           "200": {
-            "description": "OK",
+            "description": "Contact found",
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/Contact"
+                  "allOf": [
+                    {
+                      "$ref": "#/components/schemas/CommonResponse"
+                    },
+                    {
+                      "type": "object",
+                      "properties": {
+                        "data": {
+                          "type": "object",
+                          "properties": {
+                            "contact": {
+                              "$ref": "#/components/schemas/Contact"
+                            }
+                          },
+                          "required": [
+                            "contact"
+                          ]
+                        }
+                      }
+                    }
+                  ]
                 }
               }
             }
@@ -409,6 +618,9 @@
           "204": {
             "description": "No Content"
           },
+          "400": {
+            "description": "Bad Request"
+          },
           "500": {
             "$ref": "#/components/responses/500"
           }
@@ -516,13 +728,27 @@
     "schemas": {
       "Contact": {
         "type": "object",
+        "required": [
+          "_id",
+          "name",
+          "email",
+          "phoneNumber",
+          "contactType",
+          "isFavourite",
+          "userId",
+          "photo",
+          "createdAt",
+          "updatedAt"
+        ],
         "properties": {
           "_id": {
             "type": "string",
+            "description": "Contact id",
             "example": "68e6eaeb61b8a6f48903a256"
           },
           "name": {
             "type": "string",
+            "description": "Contact name",
             "example": "John Doe"
           },
           "email": {
@@ -532,6 +758,7 @@
           },
           "phoneNumber": {
             "type": "string",
+            "description": "Contact number",
             "example": "+380501112233"
           },
           "contactType": {
@@ -550,7 +777,7 @@
           },
           "photo": {
             "type": "string",
-            "description": "Public URL on Cloudinary",
+            "description": "Contact photo",
             "example": "https://res.cloudinary.com/demo/image/upload/v1720000000/photo.jpg"
           },
           "userId": {
@@ -559,22 +786,15 @@
           },
           "createdAt": {
             "type": "string",
-            "format": "date-time"
+            "format": "date-time",
+            "example": "2025-10-08T18:21:10.157+00:00"
           },
           "updatedAt": {
             "type": "string",
-            "format": "date-time"
+            "format": "date-time",
+            "example": "2025-10-08T18:21:10.157+00:00"
           }
-        },
-        "required": [
-          "_id",
-          "name",
-          "email",
-          "phoneNumber",
-          "contactType",
-          "isFavourite",
-          "userId"
-        ]
+        }
       },
       "ContactCreate": {
         "type": "object",
@@ -652,35 +872,10 @@
         }
       },
       "ContactsList": {
-        "type": "object",
-        "properties": {
-          "page": {
-            "type": "integer",
-            "example": 1
-          },
-          "perPage": {
-            "type": "integer",
-            "example": 10
-          },
-          "total": {
-            "type": "integer",
-            "example": 42
-          },
-          "items": {
-            "type": "array",
-            "items": {
-              "$ref": "#/components/schemas/Contact"
-            }
-          }
-        },
-        "required": [
-          "page",
-          "perPage",
-          "total",
-          "items"
-        ]
+        "$ref": "#/components/schemas/PaginationMeta"
       },
       "Error": {
+        "description": "Not found",
         "type": "object",
         "properties": {
           "status": {
@@ -712,6 +907,125 @@
         "required": [
           "accessToken"
         ]
+      },
+      "CommonResponse": {
+        "type": "object",
+        "required": [
+          "status",
+          "message",
+          "data"
+        ],
+        "properties": {
+          "status": {
+            "type": "integer",
+            "example": 200
+          },
+          "message": {
+            "type": "string",
+            "example": "OK"
+          },
+          "data": {
+            "type": "object",
+            "additionalProperties": true
+          }
+        }
+      },
+      "PaginationMeta": {
+        "type": "object",
+        "required": [
+          "items",
+          "page",
+          "perPage",
+          "totalItems",
+          "totalPages",
+          "hasNextPage",
+          "hasPrevPage"
+        ],
+        "properties": {
+          "page": {
+            "type": "integer",
+            "example": 1
+          },
+          "perPage": {
+            "type": "integer",
+            "example": 10
+          },
+          "totalItems": {
+            "type": "integer",
+            "example": 42
+          },
+          "totalPages": {
+            "type": "integer",
+            "example": 5
+          },
+          "hasNextPage": {
+            "type": "boolean",
+            "example": true
+          },
+          "hasPrevPage": {
+            "type": "boolean",
+            "example": false
+          },
+          "nextPage": {
+            "type": [
+              "integer",
+              "null"
+            ],
+            "example": 2
+          },
+          "prevPage": {
+            "type": [
+              "integer",
+              "null"
+            ],
+            "example": null
+          },
+          "items": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Contact"
+            }
+          }
+        }
+      },
+      "PaginatedContacts": {
+        "type": "object",
+        "required": [
+          "items",
+          "meta"
+        ],
+        "properties": {
+          "items": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Contact"
+            }
+          },
+          "meta": {
+            "$ref": "#/components/schemas/PaginationMeta"
+          }
+        }
+      },
+      "Envelope": {
+        "type": "object",
+        "required": [
+          "status",
+          "message",
+          "data"
+        ],
+        "properties": {
+          "status": {
+            "type": "integer",
+            "example": 200
+          },
+          "message": {
+            "type": "string",
+            "example": "OK"
+          },
+          "data": {
+            "description": "Response payload"
+          }
+        }
       }
     },
     "parameters": {
@@ -772,25 +1086,30 @@
     },
     "responses": {
       "401": {
-        "description": "Unauthorized Error",
+        "description": "Unauthorized",
         "content": {
           "application/json": {
             "schema": {
-              "type": "object",
-              "required": [
-                "status",
-                "message"
-              ],
-              "properties": {
-                "status": {
-                  "type": "integer",
-                  "example": 401
+              "allOf": [
+                {
+                  "$ref": "#/components/schemas/Envelope"
                 },
-                "message": {
-                  "type": "string",
-                  "example": "Unauthorized Error"
+                {
+                  "type": "object",
+                  "properties": {
+                    "status": {
+                      "example": 401
+                    },
+                    "message": {
+                      "example": "Unauthorized"
+                    },
+                    "data": {
+                      "type": "object",
+                      "example": {}
+                    }
+                  }
                 }
-              }
+              ]
             }
           }
         }
@@ -800,21 +1119,26 @@
         "content": {
           "application/json": {
             "schema": {
-              "type": "object",
-              "required": [
-                "status",
-                "message"
-              ],
-              "properties": {
-                "status": {
-                  "type": "integer",
-                  "example": 500
+              "allOf": [
+                {
+                  "$ref": "#/components/schemas/Envelope"
                 },
-                "message": {
-                  "type": "string",
-                  "example": "Internal Server Error"
+                {
+                  "type": "object",
+                  "properties": {
+                    "status": {
+                      "example": 500
+                    },
+                    "message": {
+                      "example": "Internal Server Error"
+                    },
+                    "data": {
+                      "type": "object",
+                      "example": {}
+                    }
+                  }
                 }
-              }
+              ]
             }
           }
         }
